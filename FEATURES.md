@@ -3,6 +3,8 @@
 > **Positioning:** A to-do app built for ADHD brains.
 > **Pitch:** Out of sight, out of mind — so we put your next step where you look 100 times a day: your lock screen.
 
+Name: **Onestep** (bundle ID `com.erijako.onestep`). Bare "OneStep" is taken on the App Store, so the store name needs a suffix, e.g. "Onestep: ADHD To-Do". Icon: periwinkle with one white check circle (`design/make_icon.py`).
+
 Platform: **iOS first** (native SwiftUI). Language: **English** by default, **Norwegian** later.
 
 ---
@@ -99,9 +101,9 @@ Extras: lifetime purchase (~$79.99), 7-day free trial.
 
 | Product ID | Type | Price | Notes |
 |---|---|---|---|
-| `com.erijako.todoapp.pro.yearly` | Auto-renewable, group "Pro" | $34.99/yr | Introductory offer: 7-day free trial |
-| `com.erijako.todoapp.pro.monthly` | Auto-renewable, group "Pro" | $4.99/mo | No trial |
-| `com.erijako.todoapp.pro.lifetime` | Non-consumable | $79.99 | |
+| `com.erijako.onestep.pro.yearly` | Auto-renewable, group "Pro" | $34.99/yr | Introductory offer: 7-day free trial |
+| `com.erijako.onestep.pro.monthly` | Auto-renewable, group "Pro" | $4.99/mo | No trial |
+| `com.erijako.onestep.pro.lifetime` | Non-consumable | $79.99 | |
 
 - [ ] Sign the Paid Applications agreement and add banking + tax info (products won't load until this is done)
 - [ ] Create the subscription group "Pro" and the three products above (IDs must match `TodoApp/Pro/ProStore.swift`)

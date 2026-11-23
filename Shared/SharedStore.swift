@@ -4,7 +4,7 @@ import WidgetKit
 
 /// Shared storage between the app and the widget extension (via an App Group).
 enum AppGroup {
-    static let identifier = "group.com.erijako.todoapp"
+    static let identifier = "group.com.erijako.onestep"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: identifier) ?? .standard
@@ -42,8 +42,8 @@ enum ModeStore {
 
 /// Deep links into the app.
 enum AppLink {
-    static let scheme = "todoapp"
-    static let focus = URL(string: "todoapp://focus")!
+    static let scheme = "onestep"
+    static let focus = URL(string: "onestep://focus")!
 }
 
 extension ModelContext {

@@ -15,7 +15,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.erijako.todoapp.pro.lifetime",
+      "productID" : "com.erijako.onestep.pro.lifetime",
       "referenceName" : "Pro Lifetime",
       "type" : "NonConsumable"
     }
@@ -59,7 +59,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.erijako.todoapp.pro.yearly",
+          "productID" : "com.erijako.onestep.pro.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Pro Yearly",
           "subscriptionGroupID" : "21500001",
@@ -84,7 +84,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.erijako.todoapp.pro.monthly",
+          "productID" : "com.erijako.onestep.pro.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Pro Monthly",
           "subscriptionGroupID" : "21500001",

@@ -4,9 +4,9 @@ import StoreKit
 
 /// Product IDs. These must match App Store Connect and StoreKit/Products.storekit exactly.
 enum ProProduct {
-    static let yearly = "com.erijako.todoapp.pro.yearly"
-    static let monthly = "com.erijako.todoapp.pro.monthly"
-    static let lifetime = "com.erijako.todoapp.pro.lifetime"
+    static let yearly = "com.erijako.onestep.pro.yearly"
+    static let monthly = "com.erijako.onestep.pro.monthly"
+    static let lifetime = "com.erijako.onestep.pro.lifetime"
 
     /// Display order on the paywall.
     static let all = [yearly, monthly, lifetime]

@@ -538,7 +538,7 @@ struct WidgetSteps: View {
             Divider().overlay(Theme.separator)
             row(3, "Tap the **widget area** under the time")
             Divider().overlay(Theme.separator)
-            row(4, "Find this app and pick the wide **Up Next** widget")
+            row(4, "Find **Onestep** and pick the wide **Up Next** widget")
         }
         .padding(.horizontal, 16)
         .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))

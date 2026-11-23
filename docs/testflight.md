@@ -5,7 +5,7 @@ TestFlight. It is switched off until you complete the steps below. No Mac needed
 
 ## 1. Before the first upload
 
-- [ ] **Final app name and bundle ID.** Change `com.erijako.todoapp` in `project.yml`
+- [ ] **Final app name and bundle ID.** Change `com.erijako.onestep` in `project.yml`
       *before* the first upload if you want a different one. It can't be changed later.
 - [ ] **App icon.** A 1024×1024 PNG in `TodoApp/Assets.xcassets/AppIcon.appiconset`.
       Uploads are rejected without one.
@@ -14,9 +14,9 @@ TestFlight. It is switched off until you complete the steps below. No Mac needed
 ## 2. App Store Connect (appstoreconnect.apple.com)
 
 1. **Create the app.** Apps → "+" → New App. Platform iOS, bundle ID
-   `com.erijako.todoapp` (register it first under Certificates, IDs & Profiles → Identifiers
-   if it isn't in the list; add the **App Groups** capability with `group.com.erijako.todoapp`).
-   Also register `com.erijako.todoapp.widget` with the same App Group.
+   `com.erijako.onestep` (register it first under Certificates, IDs & Profiles → Identifiers
+   if it isn't in the list; add the **App Groups** capability with `group.com.erijako.onestep`).
+   Also register `com.erijako.onestep.widget` with the same App Group.
 2. **Create an API key.** Users and Access → Integrations → App Store Connect API →
    Team Keys → "+". Name it "GitHub Actions", access **Admin** (needed so the build can
    create signing certificates automatically). Download the `.p8` file (only possible once)
