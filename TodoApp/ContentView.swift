@@ -8,6 +8,7 @@ struct ContentView: View {
     @AppStorage(ModeStore.key, store: AppGroup.defaults) private var modeRaw = TaskMode.personal.rawValue
     @State private var showFocus = false
     @Namespace private var focusZoom
+    @AppStorage(OnboardingStore.doneKey, store: AppGroup.defaults) private var onboardingDone = false
 
     private var mode: TaskMode { TaskMode(rawValue: modeRaw) ?? .personal }
 
@@ -15,6 +16,20 @@ struct ContentView: View {
         NavigationStack {
             TaskListView(mode: mode, modeRaw: $modeRaw, showFocus: $showFocus, focusZoom: focusZoom)
                 .navigationTitle(Text(mode.title))
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { !onboardingDone },
+            set: { if !$0 { onboardingDone = true } }
+        )) {
+            OnboardingView(mode: mode) { openFocus in
+                onboardingDone = true
+                if openFocus {
+                    // Let the onboarding cover close before focus mode opens.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { showFocus = true }
+                }
+            }
+            .tint(Theme.accent)
+            .fontDesign(.rounded)
         }
         .tint(Theme.accent)
         .fontDesign(.rounded)

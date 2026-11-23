@@ -90,6 +90,35 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    NavigationLink {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Your next step, right where you look. Check it off without unlocking.")
+                                    .foregroundStyle(Theme.inkSoft)
+                                WidgetSteps()
+                            }
+                            .padding(20)
+                        }
+                        .background(Theme.fog)
+                        .navigationTitle(Text("Lock screen widget"))
+                        .navigationBarTitleDisplayMode(.inline)
+                    } label: {
+                        Label("Add the lock screen widget", systemImage: "lock.iphone")
+                    }
+                    .listRowBackground(Theme.paper)
+
+                    #if DEBUG
+                    Button("Show onboarding again") {
+                        AppGroup.defaults.set(false, forKey: OnboardingStore.doneKey)
+                        dismiss()
+                    }
+                    .listRowBackground(Theme.paper)
+                    #endif
+                } header: {
+                    SectionLabel("Help")
+                }
+
+                Section {
                     Link("Terms of Use", destination: Legal.terms)
                         .listRowBackground(Theme.paper)
                     Link("Privacy Policy", destination: Legal.privacy)
