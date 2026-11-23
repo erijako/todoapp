@@ -16,8 +16,8 @@ enum ProProduct {
 enum Legal {
     /// Apple's standard EULA. Replace if you publish your own terms.
     static let terms = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
-    // TODO: Host a real privacy policy before submitting to App Review.
-    static let privacy = URL(string: "https://github.com/erijako/todoapp/blob/main/PRIVACY.md")!
+    /// docs/privacy.html, served by GitHub Pages (Settings > Pages > branch main, folder /docs).
+    static let privacy = URL(string: "https://erijako.github.io/todoapp/privacy.html")!
 }
 
 /// Loads Pro products, buys and restores them, and knows whether Pro is active.

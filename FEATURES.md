@@ -105,7 +105,7 @@ Extras: lifetime purchase (~$79.99), 7-day free trial.
 
 - [ ] Sign the Paid Applications agreement and add banking + tax info (products won't load until this is done)
 - [ ] Create the subscription group "Pro" and the three products above (IDs must match `TodoApp/Pro/ProStore.swift`)
-- [ ] Host a real privacy policy and update `Legal.privacy` in `ProStore.swift`
+- [ ] Privacy policy: fill in the placeholders in `docs/privacy.html`, then turn on GitHub Pages (main branch, `/docs` folder) so https://erijako.github.io/todoapp/privacy.html works. Privacy label in App Store Connect: **Data Not Collected**
 - [ ] Add a sandbox tester and test buy, restore and cancel via TestFlight
 - Local testing in Xcode uses `StoreKit/Products.storekit` (already set in the scheme)
 
