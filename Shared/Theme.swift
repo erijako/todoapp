@@ -20,11 +20,11 @@ enum Theme {
     static let onAccent = Color(light: 0xFFFFFF, dark: 0x141622)
     static let track = Color(light: 0xDDE0F2, dark: 0x2C3150)
     static let currentRow = Color(light: 0xF3F4FC, dark: 0x252A42)
-    static let checkStroke = Color(light: 0xB9BDCB, dark: 0x4A4F66)
+    static let checkStroke = Color(light: 0x878CA0, dark: 0x6A7090)  // 3:1 against paper
 
     // Thoughts (peach), Personal (sage), pin
     static let peach = Color(light: 0xFCEDE2, dark: 0x3A2C24)
-    static let peachInk = Color(light: 0xB5683A, dark: 0xE9A57C)
+    static let peachInk = Color(light: 0x9A5226, dark: 0xE9A57C)    // 4.5:1 on peach
     static let thoughtInk = Color(light: 0x3A2A20, dark: 0xF3DCCB)
     static let sage = Color(light: 0xE3EFE8, dark: 0x24342D)
     static let pin = Color(light: 0xC07A4F, dark: 0xE0A27A)
@@ -38,11 +38,13 @@ enum Theme {
     }
 
     enum Radius {
+        // Three shapes only: cards (24), controls (16), and pills (Capsule).
         static let card: CGFloat = 24
-        static let row: CGFloat = 20
-        static let primaryButton: CGFloat = 20
-        static let button: CGFloat = 16
-        static let field: CGFloat = 14
+        static let control: CGFloat = 16
+        static let row: CGFloat = control
+        static let primaryButton: CGFloat = control
+        static let button: CGFloat = control
+        static let field: CGFloat = control
     }
 }
 
@@ -96,7 +98,7 @@ struct SectionLabel: View {
 
     var body: some View {
         text
-            .font(.subheadline.weight(.bold))
+            .font(.footnote.weight(.bold))
             .foregroundStyle(Theme.inkSoft)
             .textCase(nil)
     }

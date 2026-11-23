@@ -16,7 +16,7 @@ struct TaskDetailView: View {
                 Section {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Title")
-                            .font(.caption.weight(.bold))
+                            .font(.footnote.weight(.bold))
                             .foregroundStyle(Theme.inkSoft)
                         TextField("Title", text: $task.title, axis: .vertical)
                             .font(.title3.weight(.bold))
@@ -42,7 +42,7 @@ struct TaskDetailView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Later")
                                 Text("Out of sight until you bring it back")
-                                    .font(.caption)
+                                    .font(.footnote)
                                     .foregroundStyle(Theme.inkSoft)
                             }
                         }
@@ -137,7 +137,7 @@ struct StepRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if isCurrent {
                     Text("Now")
-                        .font(.caption.weight(.heavy))
+                        .font(.footnote.weight(.heavy))
                         .textCase(.uppercase)
                         .foregroundStyle(Theme.accent)
                 }

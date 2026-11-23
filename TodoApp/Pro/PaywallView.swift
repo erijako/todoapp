@@ -120,10 +120,6 @@ struct PaywallView: View {
                        detail: "Watch time pass instead of guessing. Start with just 2 minutes.")
             BenefitRow(symbol: "lock.iphone", title: "On your lock screen",
                        detail: "A Live Activity and Dynamic Island countdown with your current step.")
-            BenefitRow(symbol: "checkmark.circle", title: "Check off as you go",
-                       detail: "Finish a step from the lock screen and the next one shows up.")
-            BenefitRow(symbol: "heart", title: "Calm and ad-free",
-                       detail: "Your support keeps this app independent.")
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,7 +144,7 @@ struct PaywallView: View {
         case .failed:
             VStack(spacing: 10) {
                 Text("Couldn't reach the App Store. Check your connection and try again.")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundStyle(Theme.inkSoft)
                     .multilineTextAlignment(.center)
                 SoftButton(title: "Try again") {
@@ -302,12 +298,12 @@ private struct BenefitRow: View {
                 .font(.body.weight(.bold))
                 .foregroundStyle(Theme.accent)
                 .frame(width: 40, height: 40)
-                .background(Theme.currentRow, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(Theme.currentRow, in: RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.body.weight(.bold))
                 Text(detail)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundStyle(Theme.inkSoft)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -326,7 +322,7 @@ private struct PlanCard: View {
         Button(action: onSelect) {
             HStack(spacing: 14) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundStyle(isSelected ? Theme.accent : Theme.checkStroke)
                     .contentTransition(.symbolEffect(.replace))
 
@@ -336,7 +332,7 @@ private struct PlanCard: View {
                             .font(.body.weight(.heavy))
                         if hasTrial, let offer = product.subscription?.introductoryOffer {
                             Text("\(offer.period.trialLength) free")
-                                .font(.caption.weight(.heavy))
+                                .font(.footnote.weight(.heavy))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(Theme.peach, in: Capsule())
@@ -355,7 +351,7 @@ private struct PlanCard: View {
                     Text(product.displayPrice)
                         .font(.body.weight(.heavy))
                     periodLabel
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Theme.inkSoft)
                 }
             }

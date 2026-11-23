@@ -7,12 +7,13 @@ struct ContentView: View {
     @Environment(ProStore.self) private var pro
     @AppStorage(ModeStore.key, store: AppGroup.defaults) private var modeRaw = TaskMode.personal.rawValue
     @State private var showFocus = false
+    @Namespace private var focusZoom
 
     private var mode: TaskMode { TaskMode(rawValue: modeRaw) ?? .personal }
 
     var body: some View {
         NavigationStack {
-            TaskListView(mode: mode, modeRaw: $modeRaw, showFocus: $showFocus)
+            TaskListView(mode: mode, modeRaw: $modeRaw, showFocus: $showFocus, focusZoom: focusZoom)
                 .navigationTitle(Text(mode.title))
         }
         .tint(Theme.accent)
@@ -20,6 +21,7 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $showFocus) {
             FocusView(mode: mode)
                 .environment(pro)
+                .focusZoomTransition(focusZoom)
                 .tint(Theme.accent)
                 .fontDesign(.rounded)
         }
@@ -43,6 +45,7 @@ struct TaskListView: View {
     let mode: TaskMode
     @Binding var modeRaw: String
     @Binding var showFocus: Bool
+    let focusZoom: Namespace.ID
 
     @State private var newTitle = ""
     @State private var newIsThought = false
@@ -56,8 +59,9 @@ struct TaskListView: View {
     @State private var confirmFreshStart = false
     @State private var showSettings = false
 
-    init(mode: TaskMode, modeRaw: Binding<String>, showFocus: Binding<Bool>) {
+    init(mode: TaskMode, modeRaw: Binding<String>, showFocus: Binding<Bool>, focusZoom: Namespace.ID) {
         self.mode = mode
+        self.focusZoom = focusZoom
         self._modeRaw = modeRaw
         self._showFocus = showFocus
         let raw = mode.rawValue
@@ -119,18 +123,42 @@ struct TaskListView: View {
             if let next = openTasks.first {
                 Section {
                     UpNextCard(task: next) { showFocus = true }
+                        .focusZoomSource(focusZoom)
+                        .onTapGesture { selected = next }
+                        .contextMenu {
+                            Button {
+                                withAnimation { next.toggleDone() }
+                                save()
+                            } label: {
+                                Label("Done", systemImage: "checkmark.circle")
+                            }
+                            Button {
+                                withAnimation { next.moveToLater() }
+                                save()
+                            } label: {
+                                Label("Later", systemImage: "moon.zzz")
+                            }
+                            Button(role: .destructive) {
+                                context.delete(next)
+                                save()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                 }
             }
 
+            if openTasks.isEmpty || openTasks.count > 1 {
             Section {
                 if openTasks.isEmpty {
-                    Text("Nothing to do. Nice!")
+                    Text(items.isEmpty ? "Nothing here yet. What's on your mind?" : "Nothing left to do. Nice!")
                         .foregroundStyle(Theme.inkSoft)
                         .listRowBackground(Theme.paper)
                 }
-                ForEach(openTasks) { task in
+                // The first one is already in the Up next card.
+                ForEach(openTasks.dropFirst()) { task in
                     TaskRow(task: task, onChange: save, onOpen: { selected = task })
                         .listRowBackground(Theme.paper)
                         .listRowSeparatorTint(Theme.separator)
@@ -160,7 +188,8 @@ struct TaskListView: View {
                         }
                 }
             } header: {
-                SectionLabel("Tasks")
+                SectionLabel(openTasks.isEmpty ? "Tasks" : "After that")
+            }
             }
 
             if !thoughts.isEmpty {
@@ -169,7 +198,7 @@ struct TaskListView: View {
                         TaskRow(task: thought, onChange: save, onOpen: { selected = thought })
                             .listRowBackground(Theme.peach)
                             .listRowSeparatorTint(Theme.peachInk.opacity(0.2))
-                            .swipeActions { deleteButton(thought) }
+                            .swipeActions(allowsFullSwipe: false) { deleteButton(thought) }
                             .swipeActions(edge: .leading) {
                                 Button {
                                     thought.isThought = false
@@ -193,7 +222,8 @@ struct TaskListView: View {
                             TaskRow(task: task, onChange: save, onOpen: { selected = task })
                                 .listRowBackground(Theme.paper)
                                 .listRowSeparatorTint(Theme.separator)
-                                .swipeActions { deleteButton(task) }
+                                // A long swipe must never delete: only the explicit button does.
+                                .swipeActions(allowsFullSwipe: false) { deleteButton(task) }
                                 .swipeActions(edge: .leading) {
                                     Button {
                                         withAnimation { task.bringBack() }
@@ -212,7 +242,7 @@ struct TaskListView: View {
                         HStack(spacing: 6) {
                             SectionLabel(verbatim: Text("Later · \(laterTasks.count)"))
                             Image(systemName: "chevron.right")
-                                .font(.caption.weight(.bold))
+                                .font(.footnote.weight(.bold))
                                 .foregroundStyle(Theme.inkSoft)
                                 .rotationEffect(.degrees(laterExpanded ? 90 : 0))
                             Spacer()
@@ -235,10 +265,17 @@ struct TaskListView: View {
                         TaskRow(task: task, onChange: save, onOpen: { selected = task })
                             .listRowBackground(Theme.paper)
                             .listRowSeparatorTint(Theme.separator)
-                            .swipeActions { deleteButton(task) }
+                            .swipeActions(allowsFullSwipe: false) { deleteButton(task) }
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .top).combined(with: .opacity),
+                                removal: .opacity
+                            ))
                     }
                 } header: {
-                    SectionLabel(verbatim: Text("Done today · \(doneToday.count)"))
+                    HStack(spacing: 10) {
+                        SectionLabel(verbatim: Text("Done today · \(doneToday.count)"))
+                        DoneDots(count: doneToday.count)
+                    }
                 }
             }
         }
@@ -379,7 +416,7 @@ struct UpNextCard: View {
 
             Button(action: onFocus) {
                 Label("Focus", systemImage: "scope")
-                    .font(.subheadline.weight(.bold))
+                    .font(.body.weight(.bold))
                     .padding(.horizontal, 18)
                     .frame(height: 44)
                     .background(Theme.accent, in: Capsule())
@@ -390,6 +427,51 @@ struct UpNextCard: View {
         .padding(18)
         .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(color: Theme.ink.opacity(0.06), radius: 12, y: 6)
+    }
+}
+
+/// A small row of dots that fills up through the day. Progress, not pressure.
+struct DoneDots: View {
+    let count: Int
+    private let shown = 8
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<min(count, shown), id: \.self) { _ in
+                Circle()
+                    .fill(Theme.accent)
+                    .frame(width: 7, height: 7)
+                    .transition(.scale.combined(with: .opacity))
+            }
+            if count > shown {
+                Text("+\(count - shown)")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(Theme.accent)
+            }
+        }
+        .animation(.spring(duration: 0.4, bounce: 0.5), value: count)
+        .accessibilityHidden(true)
+    }
+}
+
+extension View {
+    /// The Up next card grows into focus mode (iOS 18+). Older systems use the normal slide.
+    @ViewBuilder
+    func focusZoomSource(_ namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            matchedTransitionSource(id: "focus", in: namespace)
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
+    func focusZoomTransition(_ namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            navigationTransition(.zoom(sourceID: "focus", in: namespace))
+        } else {
+            self
+        }
     }
 }
 
@@ -423,7 +505,7 @@ struct TaskRow: View {
                     .foregroundStyle(task.isDone ? Theme.inkSoft : (task.isThought ? Theme.thoughtInk : Theme.ink))
                 if task.stepCount > 0 && !task.isDone {
                     Text("\(task.doneStepCount) of \(task.stepCount) steps")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Theme.inkSoft)
                 }
             }
@@ -433,7 +515,7 @@ struct TaskRow: View {
 
             if task.isPinned && !task.isDone {
                 Image(systemName: "pin.fill")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Theme.pin)
                     .accessibilityLabel(Text("Pinned"))
             }

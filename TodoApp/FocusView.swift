@@ -146,7 +146,7 @@ struct FocusView: View {
 
             if remaining > 1 {
                 Text("\(remaining - 1) more waiting. Not your problem right now.")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundStyle(Theme.inkSoft)
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)
@@ -186,7 +186,7 @@ struct FocusView: View {
                         Task { await FocusTimerController.extend(minutes: 5) }
                     } label: {
                         Text("+5 min")
-                            .font(.subheadline.weight(.bold))
+                            .font(.body.weight(.bold))
                             .padding(.horizontal, 16)
                             .frame(height: 44)
                             .background(Theme.paper, in: Capsule())
@@ -197,7 +197,7 @@ struct FocusView: View {
                         Task { await FocusTimerController.stop() }
                     } label: {
                         Text("Stop timer")
-                            .font(.subheadline.weight(.bold))
+                            .font(.body.weight(.bold))
                             .foregroundStyle(Theme.inkSoft)
                             .padding(.horizontal, 16)
                             .frame(height: 44)
@@ -213,7 +213,7 @@ struct FocusView: View {
                         .foregroundStyle(Theme.inkSoft)
                     if !pro.isPro {
                         Text("Pro")
-                            .font(.caption2.weight(.heavy))
+                            .font(.footnote.weight(.heavy))
                             .textCase(.uppercase)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 2)
@@ -238,8 +238,16 @@ struct FocusView: View {
             }
             Task { await FocusTimerController.start(minutes: minutes, mode: mode) }
         } label: {
-            label()
-                .font(.subheadline.weight(.bold))
+            HStack(spacing: 5) {
+                if !pro.isPro {
+                    Image(systemName: "lock.fill")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.inkSoft)
+                        .accessibilityLabel(Text("Pro"))
+                }
+                label()
+            }
+                .font(.body.weight(.bold))
                 .padding(.horizontal, 14)
                 .frame(height: 44)
                 .background(Theme.paper, in: Capsule())
@@ -336,9 +344,9 @@ struct TimerRing: View {
             } else {
                 VStack(spacing: 2) {
                     Text("Time's up")
-                        .font(.headline)
+                        .font(.body.weight(.bold))
                     Text("Done, or 5 more?")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Theme.inkSoft)
                 }
             }

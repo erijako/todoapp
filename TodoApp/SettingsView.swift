@@ -31,11 +31,11 @@ struct SettingsView: View {
                                     .font(.body.weight(.bold))
                                 if store.activeProductID == ProProduct.lifetime {
                                     Text("Lifetime. Thank you!")
-                                        .font(.caption)
+                                        .font(.footnote)
                                         .foregroundStyle(Theme.inkSoft)
                                 } else {
                                     Text("Thank you for supporting the app.")
-                                        .font(.caption)
+                                        .font(.footnote)
                                         .foregroundStyle(Theme.inkSoft)
                                 }
                             }
@@ -60,12 +60,12 @@ struct SettingsView: View {
                                         .font(.body.weight(.bold))
                                         .foregroundStyle(Theme.ink)
                                     Text("Focus timer on your lock screen")
-                                        .font(.caption)
+                                        .font(.footnote)
                                         .foregroundStyle(Theme.inkSoft)
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.caption.weight(.bold))
+                                    .font(.footnote.weight(.bold))
                                     .foregroundStyle(Theme.inkSoft)
                             }
                         }

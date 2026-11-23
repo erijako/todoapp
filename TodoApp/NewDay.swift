@@ -40,14 +40,14 @@ struct NewDayCard: View {
                         Text("That's okay. Keep what matters today, park the rest.")
                     }
                 }
-                .font(.subheadline)
+                .font(.body)
                 .foregroundStyle(Theme.inkSoft)
             }
 
             HStack(spacing: 10) {
                 Button(action: onKeep) {
                     Text("Keep all")
-                        .font(.subheadline.weight(.bold))
+                        .font(.body.weight(.bold))
                         .frame(maxWidth: .infinity)
                         .frame(height: 44)
                         .background(Theme.accent, in: Capsule())
@@ -57,7 +57,7 @@ struct NewDayCard: View {
 
                 Button(action: onChoose) {
                     Text("Park some")
-                        .font(.subheadline.weight(.bold))
+                        .font(.body.weight(.bold))
                         .frame(maxWidth: .infinity)
                         .frame(height: 44)
                         .background(Theme.segment, in: Capsule())
@@ -67,8 +67,12 @@ struct NewDayCard: View {
             }
         }
         .padding(18)
-        .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-        .shadow(color: Theme.ink.opacity(0.06), radius: 12, y: 6)
+        // Lighter than the Up next card, so that card stays the anchor.
+        .background(Theme.paper.opacity(0.55), in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                .strokeBorder(Theme.segment, lineWidth: 1)
+        }
     }
 }
 
@@ -135,7 +139,7 @@ struct CarryOverSheet: View {
                             Text("Park \(selected.count) in Later")
                         }
                     }
-                    .font(.headline.weight(.heavy))
+                    .font(.body.weight(.heavy))
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
                     .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.primaryButton, style: .continuous))
