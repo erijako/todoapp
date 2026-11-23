@@ -16,7 +16,8 @@ struct TasksWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: TasksProvider()) { entry in
             TasksWidgetView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .fontDesign(.rounded)
+                .containerBackground(Theme.paper, for: .widget)
                 .widgetURL(AppLink.focus)
         }
         .configurationDisplayName("Up Next")
@@ -219,7 +220,7 @@ struct HomeScreenView: View {
                 }
             }
             .font(.caption.bold())
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Theme.inkSoft)
 
             Spacer(minLength: 0)
 
@@ -231,7 +232,8 @@ struct HomeScreenView: View {
                         .lineLimit(1)
                 }
                 Text(next.headline)
-                    .font(isMedium ? .title3.bold() : .headline)
+                    .font(isMedium ? .title3.weight(.heavy) : .headline.weight(.heavy))
+                    .foregroundStyle(Theme.ink)
                     .lineLimit(3)
 
                 Spacer(minLength: 0)
@@ -241,7 +243,7 @@ struct HomeScreenView: View {
                         Label("Done", systemImage: "checkmark.circle")
                             .font(.subheadline.bold())
                     }
-                    .tint(.accentColor)
+                    .tint(Theme.accent)
                     Spacer()
                     if entry.remaining > 1 {
                         Text("+\(entry.remaining - 1)")

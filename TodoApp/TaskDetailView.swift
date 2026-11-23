@@ -14,38 +14,62 @@ struct TaskDetailView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Title", text: $task.title, axis: .vertical)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Title")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(Theme.inkSoft)
+                        TextField("Title", text: $task.title, axis: .vertical)
+                            .font(.title3.weight(.bold))
+                    }
+                    .listRowBackground(Theme.paper)
+
                     Toggle("Thought (not a task)", isOn: $task.isThought)
+                        .listRowBackground(Theme.paper)
                     if !task.isThought {
                         Toggle("Pin as next", isOn: $task.isPinned)
+                            .listRowBackground(Theme.paper)
                     }
                 }
 
                 if !task.isThought {
                     Section {
                         ForEach(task.sortedSteps) { step in
-                            StepRow(step: step) {
+                            let isCurrent = step.id == task.currentStep?.id
+                            StepRow(step: step, isCurrent: isCurrent) {
                                 withAnimation { task.toggleStep(step) }
                                 context.saveAndRefresh()
                             }
+                            .listRowBackground(isCurrent ? Theme.currentRow : Theme.paper)
+                            .listRowSeparatorTint(Theme.separator)
                         }
                         .onDelete(perform: deleteSteps)
 
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(Color.accentColor)
+                        HStack(spacing: 12) {
+                            Image(systemName: "plus")
+                                .font(.body.weight(.bold))
+                                .foregroundStyle(Theme.accent)
+                                .frame(width: 24)
                             TextField("Add a tiny step…", text: $newStep)
                                 .focused($stepFieldFocused)
                                 .submitLabel(.next)
                                 .onSubmit(addStep)
                         }
+                        .listRowBackground(Theme.paper)
                     } header: {
-                        Text("Steps")
+                        if task.stepCount > 0 {
+                            SectionLabel(verbatim: Text("Steps · \(task.doneStepCount) of \(task.stepCount) done"))
+                        } else {
+                            SectionLabel("Steps")
+                        }
                     } footer: {
                         Text("Make each step so small it feels almost silly. That's the trick.")
+                            .foregroundStyle(Theme.inkSoft)
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.fog)
+            .foregroundStyle(Theme.ink)
             .navigationTitle(task.isThought ? Text("Thought") : Text("Task"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -54,6 +78,7 @@ struct TaskDetailView: View {
                         context.saveAndRefresh()
                         dismiss()
                     }
+                    .fontWeight(.heavy)
                 }
             }
         }
@@ -79,18 +104,26 @@ struct TaskDetailView: View {
 
 struct StepRow: View {
     let step: TaskStep
+    var isCurrent: Bool = false
     let onToggle: () -> Void
 
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: 12) {
-                Image(systemName: step.isDone ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(step.isDone ? Color.accentColor : Color.secondary)
-                    .symbolEffect(.bounce, value: step.isDone)
+                CheckCircle(isDone: step.isDone, isCurrent: isCurrent, size: 24)
                 Text(step.title)
+                    .font(.body.weight(isCurrent ? .bold : (step.isDone ? .regular : .semibold)))
                     .strikethrough(step.isDone)
-                    .foregroundStyle(step.isDone ? Color.secondary : Color.primary)
+                    .foregroundStyle(step.isDone ? Theme.inkSoft : Theme.ink)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if isCurrent {
+                    Text("Now")
+                        .font(.caption.weight(.heavy))
+                        .textCase(.uppercase)
+                        .foregroundStyle(Theme.accent)
+                }
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

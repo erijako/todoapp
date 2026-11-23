@@ -10,23 +10,15 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            TaskListView(mode: mode, showFocus: $showFocus)
+            TaskListView(mode: mode, modeRaw: $modeRaw, showFocus: $showFocus)
                 .navigationTitle(Text(mode.title))
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        Picker("Mode", selection: $modeRaw) {
-                            ForEach(TaskMode.allCases) { mode in
-                                Label { Text(mode.title) } icon: { Image(systemName: mode.symbol) }
-                                    .tag(mode.rawValue)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .frame(width: 220)
-                    }
-                }
         }
+        .tint(Theme.accent)
+        .fontDesign(.rounded)
         .fullScreenCover(isPresented: $showFocus) {
             FocusView(mode: mode)
+                .tint(Theme.accent)
+                .fontDesign(.rounded)
         }
         .onChange(of: modeRaw) {
             WidgetCenter.shared.reloadAllTimelines()
@@ -44,15 +36,16 @@ struct TaskListView: View {
     @Query private var items: [TaskItem]
 
     let mode: TaskMode
+    @Binding var modeRaw: String
     @Binding var showFocus: Bool
 
     @State private var newTitle = ""
     @State private var newIsThought = false
-    @State private var showDone = true
     @State private var selected: TaskItem?
 
-    init(mode: TaskMode, showFocus: Binding<Bool>) {
+    init(mode: TaskMode, modeRaw: Binding<String>, showFocus: Binding<Bool>) {
         self.mode = mode
+        self._modeRaw = modeRaw
         self._showFocus = showFocus
         let raw = mode.rawValue
         _items = Query(
@@ -67,36 +60,60 @@ struct TaskListView: View {
 
     var body: some View {
         List {
+            Section {
+                Picker("Mode", selection: $modeRaw) {
+                    ForEach(TaskMode.allCases) { mode in
+                        Text(mode.title).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+            }
+
             if let next = openTasks.first {
                 Section {
                     UpNextCard(task: next) { showFocus = true }
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
                 }
             }
 
-            Section("Tasks") {
+            Section {
                 if openTasks.isEmpty {
                     Text("Nothing to do. Nice!")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.inkSoft)
+                        .listRowBackground(Theme.paper)
                 }
                 ForEach(openTasks) { task in
                     TaskRow(task: task, onChange: save, onOpen: { selected = task })
+                        .listRowBackground(Theme.paper)
+                        .listRowSeparatorTint(Theme.separator)
                         .swipeActions { deleteButton(task) }
                         .swipeActions(edge: .leading) {
                             Button {
                                 task.isPinned.toggle()
                                 save()
                             } label: {
-                                Label(task.isPinned ? "Unpin" : "Pin", systemImage: task.isPinned ? "pin.slash" : "pin")
+                                if task.isPinned {
+                                    Label("Unpin", systemImage: "pin.slash")
+                                } else {
+                                    Label("Pin", systemImage: "pin")
+                                }
                             }
-                            .tint(.orange)
+                            .tint(Theme.pin)
                         }
                 }
+            } header: {
+                SectionLabel("Tasks")
             }
 
             if !thoughts.isEmpty {
-                Section("Thoughts") {
+                Section {
                     ForEach(thoughts) { thought in
                         TaskRow(task: thought, onChange: save, onOpen: { selected = thought })
+                            .listRowBackground(Theme.peach)
+                            .listRowSeparatorTint(Theme.peachInk.opacity(0.2))
                             .swipeActions { deleteButton(thought) }
                             .swipeActions(edge: .leading) {
                                 Button {
@@ -106,24 +123,32 @@ struct TaskListView: View {
                                 } label: {
                                     Label("Make task", systemImage: "checklist")
                                 }
-                                .tint(.accentColor)
+                                .tint(Theme.accent)
                             }
                     }
+                } header: {
+                    SectionLabel("Thoughts")
                 }
             }
 
             if !doneToday.isEmpty {
-                Section(isExpanded: $showDone) {
+                Section {
                     ForEach(doneToday) { task in
                         TaskRow(task: task, onChange: save, onOpen: { selected = task })
+                            .listRowBackground(Theme.paper)
+                            .listRowSeparatorTint(Theme.separator)
                             .swipeActions { deleteButton(task) }
                     }
                 } header: {
-                    Text("Done today (\(doneToday.count))")
+                    SectionLabel(verbatim: Text("Done today · \(doneToday.count)"))
                 }
             }
         }
-        .listStyle(.sidebar)
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(14)
+        .scrollContentBackground(.hidden)
+        .background(Theme.fog)
+        .foregroundStyle(Theme.ink)
         .animation(.default, value: items.map(\.isDone))
         .sensoryFeedback(trigger: doneToday.count) { old, new in
             new > old ? .success : nil
@@ -133,6 +158,8 @@ struct TaskListView: View {
         }
         .sheet(item: $selected) { task in
             TaskDetailView(task: task)
+                .tint(Theme.accent)
+                .fontDesign(.rounded)
         }
     }
 
@@ -163,32 +190,33 @@ struct UpNextCard: View {
     let onFocus: () -> Void
 
     var body: some View {
-        Button(action: onFocus) {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Up next")
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary)
-                    Text(task.currentStep?.title ?? task.title)
-                        .font(.headline)
-                        .foregroundStyle(Color.primary)
-                    if task.currentStep != nil {
-                        Text(task.title)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                EyebrowText("Up next")
+                Text(task.currentStep?.title ?? task.title)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(Theme.ink)
+                if let number = task.currentStepNumber {
+                    Text("\(task.title) · step \(number) of \(task.stepCount)")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.inkSoft)
                 }
-                Spacer()
-                Label("Focus", systemImage: "scope")
-                    .font(.subheadline.bold())
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.accentColor, in: Capsule())
-                    .foregroundStyle(Color.white)
             }
-            .padding(.vertical, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button(action: onFocus) {
+                Label("Focus", systemImage: "scope")
+                    .font(.subheadline.weight(.bold))
+                    .padding(.horizontal, 18)
+                    .frame(height: 44)
+                    .background(Theme.accent, in: Capsule())
+                    .foregroundStyle(Theme.onAccent)
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
+        .padding(18)
+        .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+        .shadow(color: Theme.ink.opacity(0.06), radius: 12, y: 6)
     }
 }
 
@@ -201,16 +229,15 @@ struct TaskRow: View {
         HStack(spacing: 12) {
             if task.isThought {
                 Image(systemName: "lightbulb")
-                    .foregroundStyle(.yellow)
+                    .font(.title3)
+                    .foregroundStyle(Theme.peachInk)
+                    .frame(width: 26)
             } else {
                 Button {
                     withAnimation(.spring) { task.toggleDone() }
                     onChange()
                 } label: {
-                    Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                        .font(.title3)
-                        .foregroundStyle(task.isDone ? Color.accentColor : Color.secondary)
-                        .symbolEffect(.bounce, value: task.isDone)
+                    CheckCircle(isDone: task.isDone)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(task.isDone ? Text("Mark as not done") : Text("Mark as done"))
@@ -218,12 +245,13 @@ struct TaskRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(task.title)
+                    .font(.body.weight(task.isDone ? .regular : .semibold))
                     .strikethrough(task.isDone)
-                    .foregroundStyle(task.isDone ? Color.secondary : Color.primary)
+                    .foregroundStyle(task.isDone ? Theme.inkSoft : (task.isThought ? Theme.thoughtInk : Theme.ink))
                 if task.stepCount > 0 && !task.isDone {
-                    Text("\(task.doneStepCount)/\(task.stepCount) steps")
+                    Text("\(task.doneStepCount) of \(task.stepCount) steps")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.inkSoft)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -233,9 +261,11 @@ struct TaskRow: View {
             if task.isPinned && !task.isDone {
                 Image(systemName: "pin.fill")
                     .font(.caption)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Theme.pin)
+                    .accessibilityLabel(Text("Pinned"))
             }
         }
+        .padding(.vertical, 3)
     }
 }
 
@@ -247,36 +277,52 @@ struct QuickAddBar: View {
     @FocusState private var focused: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Button {
                 isThought.toggle()
             } label: {
                 Image(systemName: isThought ? "lightbulb.fill" : "checklist")
-                    .font(.title3)
-                    .foregroundStyle(isThought ? Color.yellow : Color.accentColor)
-                    .frame(width: 32)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isThought ? Theme.peachInk : Theme.accent)
+                    .frame(width: 44, height: 44)
+                    .background(isThought ? Theme.peach : Theme.paper,
+                                in: RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous))
             }
+            .buttonStyle(.plain)
             .accessibilityLabel(isThought ? Text("Adding a thought") : Text("Adding a task"))
 
-            TextField(isThought ? "New thought…" : "New task…", text: $text)
+            TextField(isThought ? "A thought, no pressure…" : "Get it out of your head…", text: $text)
                 .focused($focused)
                 .submitLabel(.done)
                 .onSubmit {
                     onSubmit()
                     focused = true
                 }
+                .padding(.horizontal, 14)
+                .frame(height: 44)
+                .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous))
 
             if !text.isEmpty {
                 Button(action: onSubmit) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.title2)
+                    Image(systemName: "arrow.up")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(Theme.onAccent)
+                        .frame(width: 44, height: 44)
+                        .background(Theme.accent, in: Circle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel(Text("Add"))
+                .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background(.bar)
+        .animation(.spring(duration: 0.25), value: text.isEmpty)
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .background(Theme.fog.opacity(0.95))
+        .overlay(alignment: .top) {
+            Theme.segment.frame(height: 1)
+        }
     }
 }
 

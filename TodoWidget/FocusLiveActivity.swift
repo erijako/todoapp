@@ -8,7 +8,8 @@ struct FocusLiveActivity: Widget {
         ActivityConfiguration(for: FocusActivityAttributes.self) { context in
             FocusLockScreenView(state: context.state, isStale: context.isStale, modeSymbol: context.attributes.modeSymbol)
                 .padding(16)
-                .activityBackgroundTint(Color.black.opacity(0.6))
+                .fontDesign(.rounded)
+                .activityBackgroundTint(Theme.Live.background.opacity(0.62))
                 .activitySystemActionForegroundColor(.white)
                 .widgetURL(AppLink.focus)
         } dynamicIsland: { context in
@@ -17,7 +18,7 @@ struct FocusLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.leading) {
                     Label("Focus", systemImage: "scope")
                         .font(.caption.bold())
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(Theme.Live.label)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     CountdownText(state: state, isStale: context.isStale)
@@ -34,16 +35,16 @@ struct FocusLiveActivity: Widget {
                 }
             } compactLeading: {
                 Image(systemName: "scope")
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(Theme.Live.accent)
             } compactTrailing: {
                 CountdownText(state: state, isStale: context.isStale)
                     .frame(maxWidth: 48)
             } minimal: {
                 Image(systemName: "scope")
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(Theme.Live.accent)
             }
             .widgetURL(AppLink.focus)
-            .keylineTint(.accentColor)
+            .keylineTint(Theme.Live.accent)
         }
     }
 }
@@ -63,17 +64,17 @@ struct FocusLockScreenView: View {
                     Image(systemName: modeSymbol)
                 }
                 .font(.caption.bold())
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.Live.label)
 
                 Spacer()
 
                 CountdownText(state: state, isStale: isStale)
-                    .font(.title2.bold())
+                    .font(.title2.weight(.heavy))
                     .frame(maxWidth: 110, alignment: .trailing)
             }
 
             Text(state.title)
-                .font(.headline)
+                .font(.headline.weight(.heavy))
                 .lineLimit(2)
 
             if !isStale {
@@ -83,7 +84,7 @@ struct FocusLockScreenView: View {
                     label: { EmptyView() },
                     currentValueLabel: { EmptyView() }
                 )
-                .tint(.accentColor)
+                .tint(Theme.Live.accent)
             }
 
             FocusActions()
@@ -113,17 +114,18 @@ struct FocusActions: View {
         HStack(spacing: 12) {
             Button(intent: CompleteFocusTaskIntent()) {
                 Label("Done", systemImage: "checkmark")
-                    .font(.subheadline.bold())
+                    .font(.subheadline.weight(.heavy))
                     .frame(maxWidth: .infinity)
+                    .foregroundStyle(Theme.Live.onAccent)
             }
-            .tint(.accentColor)
+            .tint(Theme.Live.accent)
 
             Button(intent: StopFocusIntent()) {
                 Label("Stop", systemImage: "stop.fill")
                     .font(.subheadline)
                     .frame(maxWidth: .infinity)
             }
-            .tint(.gray)
+            .tint(Color.white.opacity(0.25))
         }
     }
 }

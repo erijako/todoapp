@@ -103,6 +103,12 @@ Extras: lifetime purchase (~$79.99), 7-day free trial.
 
 ---
 
+## Design
+
+"Calm & Soft": fog background, white rounded cards, periwinkle accent, sage (personal), peach (thoughts), SF Pro Rounded. Never red, never "overdue". Tokens live in `Shared/Theme.swift`.
+
+Mockups: https://claude.ai/artifact/8pivoN64YcqF1f5miS95th
+
 ## Tech stack
 
 - SwiftUI, SwiftData (CloudKit sync later)
