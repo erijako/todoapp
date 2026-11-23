@@ -132,4 +132,4 @@ Mockups: https://claude.ai/artifact/8pivoN64YcqF1f5miS95th
 - StoreKit 2
 - String Catalogs for localization (en, nb later)
 - XcodeGen for project generation (no Mac required)
-- GitHub Actions (`macos-15-intel` runner) → TestFlight
+- GitHub Actions (`macos-15-intel` runner) → TestFlight (`.github/workflows/testflight.yml`, off until the account is approved; setup in `docs/testflight.md`)
