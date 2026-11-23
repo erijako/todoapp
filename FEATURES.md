@@ -1,59 +1,68 @@
 # Feature List
 
-> **Pitch:** Empty your head in 2 seconds, and keep what matters visible where you look most — your lock screen.
+> **Positioning:** A to-do app built for ADHD brains.
+> **Pitch:** Out of sight, out of mind — so we put your next step where you look 100 times a day: your lock screen.
 
 Platform: **iOS first** (native SwiftUI). Language: **English** by default, **Norwegian** later.
 
 ---
 
-## 1. Lock screen (core differentiator)
+## Design principles
 
-- [ ] Lock screen widget showing top 1–3 tasks (WidgetKit, accessory families)
-- [ ] Check off tasks directly from the widget (interactive widgets, App Intents, iOS 17+)
-- [ ] Live Activity / Dynamic Island: "Working on…" with timer (ActivityKit)
-- [ ] Generated wallpaper with your task list (via Shortcuts automation) + premium themes
-- [ ] StandBy mode support
+1. **One thing at a time.** Show the next step, not the whole mountain.
+2. **Zero friction capture.** Get it out of your head in 2 seconds. Sort later (or never).
+3. **No shame.** No red overdue piles, no broken-streak guilt. Unfinished tasks quietly roll over.
+4. **Make time visible.** Fight time blindness with timers and countdowns you can see.
+5. **Reward progress.** Satisfying check-offs, haptics and small wins — dopamine, not pressure.
+6. **Never make medical claims.** "Built for ADHD brains", not "treats ADHD".
 
-## 2. Capture thoughts fast
+---
 
-- [ ] Quick inbox: type without choosing a list, sort later
-- [ ] Thought vs. task: not everything needs doing — keep ideas as notes
-- [ ] Natural language dates ("call dentist friday")
-- [ ] Voice to task
-- [ ] Share extension: links, mail, screenshots into the inbox
-- [ ] Action Button / Control Center control for one-tap capture
-- [ ] Weekly review: "You have 12 unsorted thoughts — sort them?"
+## ADHD pain points → features
 
-## 3. Personal vs. work
+| Pain point | Feature |
+|---|---|
+| Out of sight, out of mind | Lock screen widget showing **one** next task, check off from the lock screen |
+| Overwhelm / task paralysis | "Just one thing" focus mode; hide everything except the current task |
+| Can't get started | Break a task into tiny steps (manual, AI later); "2-minute start" button |
+| Time blindness | Visual timer + Live Activity countdown on lock screen and Dynamic Island |
+| Forgetting | Gentle repeating nudges until done or snoozed |
+| Racing thoughts | Brain dump inbox: thoughts, not tasks, no structure required |
+| Guilt and shame | Auto rollover, no overdue badges, "fresh start" button |
+| Low/variable energy | Energy tags and "I'm low on energy" filter |
+| Losing motivation | Satisfying animations, haptics, daily "done" list (what you *did* do) |
 
-- [ ] Modes: Personal / Work / All — lock screen shows the right list
-- [ ] Auto-switch by time and location
-- [ ] iOS Focus integration (Focus Filters)
-- [ ] "Off work": hide work tasks on weekends and vacation
+---
 
-## 4. Smart features (Pro candidates)
+## MVP (v1.0) — prioritized
 
-- [ ] AI task breakdown ("Plan birthday party" → subtasks)
-- [ ] Energy level tags (low / high) and "I'm tired" filter
-- [ ] "What should I do now?" — one suggested task based on time, place, deadlines
-- [ ] Calendar view, drag tasks into free slots
-- [ ] Flexible recurring tasks ("every 3rd week", "last Friday of the month")
-- [ ] Evening recap: what got done, what moves to tomorrow
+1. **Brain dump inbox** (thoughts + tasks) ✅ scaffolded
+2. **Lock screen widget, check off from lock screen** ✅ scaffolded → redesign to "one next task" focus
+3. **Personal / Work modes** ✅ scaffolded
+4. **"Just one thing" focus screen**: big single task, done / skip / break down
+5. **Break into steps**: subtasks, widget shows the current step
+6. **Visual focus timer + Live Activity** (lock screen countdown)
+7. **No-shame rollover**: open tasks move to today silently
+8. **Satisfying check-off** (animation + haptics) and a "Done today" list
+9. **Pro subscription** (StoreKit 2) with free trial
 
-## 5. Sharing (growth + revenue)
+## v1.x
 
-- [ ] Shared lists (groceries, household)
-- [ ] Family plan
-- [ ] Small-team version (later)
+- Gentle repeating nudges (notifications that come back until handled)
+- Energy tags + low-energy filter
+- AI step breakdown ("Clean the kitchen" → 5 tiny steps)
+- Routines (morning / evening checklists)
+- Lock screen wallpaper generator with your next task
+- Focus Filters (iOS Focus integration) and auto-switch Personal/Work
+- Siri / Shortcuts / Action Button capture
+- iCloud sync
+- Norwegian localization
 
-## 6. Polish
+## Later
 
-- [ ] Themes and alternate app icons
-- [ ] Optional streaks and stats
-- [ ] Dark mode, Dynamic Type, VoiceOver
-- [ ] Apple Watch: check off from wrist
-- [ ] Siri: "Add milk to my grocery list"
-- [ ] iCloud sync across iPhone / iPad / Mac
+- Body doubling ("work alongside" sessions)
+- Apple Watch: next task + check off from wrist
+- Shared lists / family plan
 
 ---
 
@@ -61,29 +70,25 @@ Platform: **iOS first** (native SwiftUI). Language: **English** by default, **No
 
 **Freemium + subscription.** No ads.
 
-| Free | Pro (~$4.99/mo or ~$29.99/yr) |
+| Free | Pro (~$4.99/mo or ~$34.99/yr) |
 |---|---|
-| Unlimited tasks | Personal/Work modes with auto-switch |
-| 1 lock screen widget | All widgets + Live Activities |
-| Quick inbox | Wallpaper generator + themes |
-| 3 lists | AI features, voice to task |
-| | Unlimited lists, sharing, sync |
+| Brain dump inbox, unlimited tasks | Focus timer + Live Activities |
+| Lock screen widget (one task) | All widget sizes and styles |
+| Basic focus mode | Break into steps (unlimited), AI breakdown |
+| | Gentle nudges, routines, energy filter |
+| | Wallpaper generator + themes |
 
-Extras:
-- Lifetime purchase (~$59.99)
-- Family plan (~$49.99/yr, up to 5 people)
-- Theme packs as one-time purchases
-- 7–14 day free Pro trial on first launch
+Extras: lifetime purchase (~$79.99), 7-day free trial.
+
+## Go-to-market
+
+- Short-form video (TikTok / Reels / Shorts): "my lock screen fixed my ADHD to-do list" — the product is visual, so demo it
+- Build in public; collect a waitlist before launch
+- Talk to people with ADHD early (respect community rules — no spam in r/ADHD etc.)
+- App Store keywords: ADHD planner, brain dump, focus, lock screen to-do
+- Competitors to study: Tiimo, Structured, Goblin Tools, Routinery, Inflow
 
 ---
-
-## MVP (v1.0)
-
-1. Quick inbox + lists
-2. Personal / Work modes (manual switch)
-3. **Interactive lock screen widget** ← core
-4. Due dates and reminders
-5. Pro subscription with 2–3 paid features
 
 ## Tech stack
 
@@ -92,4 +97,4 @@ Extras:
 - StoreKit 2
 - String Catalogs for localization (en, nb later)
 - XcodeGen for project generation (no Mac required)
-- GitHub Actions macOS runners → TestFlight
+- GitHub Actions (`macos-15-intel` runner) → TestFlight
