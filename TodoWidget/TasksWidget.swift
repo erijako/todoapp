@@ -6,6 +6,7 @@ import WidgetKit
 struct TodoWidgetBundle: WidgetBundle {
     var body: some Widget {
         TasksWidget()
+        FocusLiveActivity()
     }
 }
 

@@ -9,6 +9,7 @@ struct FocusView: View {
 
     let mode: TaskMode
 
+    @AppStorage(FocusTimerStore.key, store: AppGroup.defaults) private var timerData: Data?
     @State private var celebrateTrigger = 0
     @State private var breakdownTask: TaskItem?
 
@@ -23,6 +24,7 @@ struct FocusView: View {
 
     private var next: TaskItem? { FocusEngine.next(items) }
     private var remaining: Int { FocusEngine.openTasks(items).count }
+    private var timer: FocusTimerState? { FocusTimerStore.decode(timerData) }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -38,12 +40,17 @@ struct FocusView: View {
 
             Spacer()
 
+            if next != nil {
+                timerSection
+            }
+
             if let task = next {
                 actions(task)
             }
         }
         .padding(24)
         .sensoryFeedback(.success, trigger: celebrateTrigger)
+        .task { await FocusTimerController.cleanUpIfExpired() }
         .sheet(item: $breakdownTask) { task in
             TaskDetailView(task: task)
         }
@@ -135,6 +142,53 @@ struct FocusView: View {
         }
     }
 
+    // MARK: Timer
+
+    @ViewBuilder
+    private var timerSection: some View {
+        if let timer {
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                let total = max(timer.end.timeIntervalSince(timer.start), 1)
+                let left = max(timer.end.timeIntervalSince(context.date), 0)
+                TimerRing(fraction: left / total, secondsLeft: left)
+            }
+            HStack(spacing: 24) {
+                Button {
+                    Task { await FocusTimerController.extend(minutes: 5) }
+                } label: {
+                    Label("5 min", systemImage: "plus")
+                }
+                Button(role: .destructive) {
+                    Task { await FocusTimerController.stop() }
+                } label: {
+                    Label("Stop", systemImage: "stop.fill")
+                }
+            }
+            .font(.subheadline)
+        } else {
+            VStack(spacing: 8) {
+                Text("Make time visible")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    timerButton(minutes: 2) { Text("2-min start") }
+                    timerButton(minutes: 10) { Text("10 min") }
+                    timerButton(minutes: 25) { Text("25 min") }
+                }
+            }
+        }
+    }
+
+    private func timerButton(minutes: Int, @ViewBuilder label: () -> Text) -> some View {
+        Button {
+            Task { await FocusTimerController.start(minutes: minutes, mode: mode) }
+        } label: {
+            label()
+                .font(.subheadline.weight(.medium))
+        }
+        .buttonStyle(.bordered)
+    }
+
     private var allClear: some View {
         VStack(spacing: 12) {
             Image(systemName: "sparkles")
@@ -157,6 +211,7 @@ struct FocusView: View {
         }
         celebrateTrigger += 1
         context.saveAndRefresh()
+        Task { await FocusTimerController.refreshActivity() }
     }
 
     /// Moves the task to the back of the line. No guilt.
@@ -166,5 +221,39 @@ struct FocusView: View {
             task.sortOrder = Date.now.timeIntervalSince1970
         }
         context.saveAndRefresh()
+        Task { await FocusTimerController.refreshActivity() }
+    }
+}
+
+/// A ring that empties as time runs out. Seeing time pass helps with time blindness.
+struct TimerRing: View {
+    let fraction: Double
+    let secondsLeft: TimeInterval
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.accentColor.opacity(0.15), lineWidth: 12)
+            Circle()
+                .trim(from: 0, to: fraction)
+                .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(.linear(duration: 1), value: fraction)
+            if secondsLeft > 0 {
+                Text(Duration.seconds(secondsLeft).formatted(.time(pattern: .minuteSecond)))
+                    .font(.title.monospacedDigit().bold())
+                    .contentTransition(.numericText(countsDown: true))
+            } else {
+                VStack(spacing: 2) {
+                    Text("Time's up")
+                        .font(.headline)
+                    Text("Done, or 5 more?")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .frame(width: 150, height: 150)
+        .accessibilityElement(children: .combine)
     }
 }
