@@ -42,9 +42,9 @@ Platform: **iOS first** (native SwiftUI). Language: **English** by default, **No
 4. **"Just one thing" focus screen**: big single task, done / skip / break down
 5. **Break into steps**: subtasks, widget shows the current step
 6. **Visual focus timer + Live Activity** (lock screen countdown)
-7. **No-shame rollover**: open tasks move to today silently
-8. **Satisfying check-off** (animation + haptics) and a "Done today" list
-9. **Pro subscription** (StoreKit 2) with free trial
+7. **No-shame rollover** ✅: no dates, no overdue. Unfinished tasks just stay. On a new day a gentle card says what came along and offers to park some in **Later** (a quiet, collapsed bucket the widget and focus mode ignore). "Fresh start" parks everything in one tap. "Done today" resets at midnight.
+8. **Satisfying check-off** (animation + haptics) and a "Done today" list ✅
+9. **Pro subscription** (StoreKit 2) with free trial ✅ code done. Calm & Soft paywall, shown only when tapping a Pro feature or "Try Pro" in Settings. v1.0 gates the focus timer + Live Activity only.
 
 ## v1.1 — Couples (big launch update)
 
@@ -92,6 +92,22 @@ Platform: **iOS first** (native SwiftUI). Language: **English** by default, **No
 | | Wallpaper generator + themes |
 
 Extras: lifetime purchase (~$79.99), 7-day free trial.
+
+**v1.0 gating:** only the focus timer + Live Activity is Pro. Steps, widgets and rollover stay free.
+
+### Pro setup checklist (App Store Connect, once the developer account is approved)
+
+| Product ID | Type | Price | Notes |
+|---|---|---|---|
+| `com.erijako.todoapp.pro.yearly` | Auto-renewable, group "Pro" | $34.99/yr | Introductory offer: 7-day free trial |
+| `com.erijako.todoapp.pro.monthly` | Auto-renewable, group "Pro" | $4.99/mo | No trial |
+| `com.erijako.todoapp.pro.lifetime` | Non-consumable | $79.99 | |
+
+- [ ] Sign the Paid Applications agreement and add banking + tax info (products won't load until this is done)
+- [ ] Create the subscription group "Pro" and the three products above (IDs must match `TodoApp/Pro/ProStore.swift`)
+- [ ] Host a real privacy policy and update `Legal.privacy` in `ProStore.swift`
+- [ ] Add a sandbox tester and test buy, restore and cancel via TestFlight
+- Local testing in Xcode uses `StoreKit/Products.storekit` (already set in the scheme)
 
 ## Go-to-market
 

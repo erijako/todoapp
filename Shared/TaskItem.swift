@@ -34,6 +34,8 @@ final class TaskItem {
     var isDone: Bool = false
     var isThought: Bool = false
     var isPinned: Bool = false
+    /// Parked out of sight. Not shown as "next" and never nagged about.
+    var isLater: Bool = false
     var modeRaw: String = TaskMode.personal.rawValue
     var createdAt: Date = Date()
     var completedAt: Date?
@@ -90,6 +92,20 @@ final class TaskItem {
         step.task = self
     }
 
+    // MARK: Later
+
+    /// Parks the task out of sight. Nothing is lost.
+    func moveToLater() {
+        isLater = true
+        isPinned = false
+    }
+
+    /// Brings a parked task back to the end of the line.
+    func bringBack() {
+        isLater = false
+        sortOrder = Date.now.timeIntervalSince1970
+    }
+
     // MARK: Completing
 
     func toggleDone() {
@@ -139,9 +155,10 @@ final class TaskStep {
 /// Decides what "the next thing" is. Shared by the app and the widget so they always agree.
 enum FocusEngine {
     /// Open tasks in focus order: pinned first, then in the order they were added.
+    /// Tasks parked in Later are left out.
     static func openTasks(_ items: [TaskItem]) -> [TaskItem] {
         items
-            .filter { !$0.isDone && !$0.isThought }
+            .filter { !$0.isDone && !$0.isThought && !$0.isLater }
             .sorted { a, b in
                 if a.isPinned != b.isPinned { return a.isPinned }
                 return a.sortOrder < b.sortOrder
@@ -150,5 +167,12 @@ enum FocusEngine {
 
     static func next(_ items: [TaskItem]) -> TaskItem? {
         openTasks(items).first
+    }
+
+    /// Open tasks parked in Later, oldest first.
+    static func laterTasks(_ items: [TaskItem]) -> [TaskItem] {
+        items
+            .filter { !$0.isDone && !$0.isThought && $0.isLater }
+            .sorted { $0.sortOrder < $1.sortOrder }
     }
 }

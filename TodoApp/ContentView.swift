@@ -1,8 +1,10 @@
 import SwiftUI
 import SwiftData
 import WidgetKit
+import Combine
 
 struct ContentView: View {
+    @Environment(ProStore.self) private var pro
     @AppStorage(ModeStore.key, store: AppGroup.defaults) private var modeRaw = TaskMode.personal.rawValue
     @State private var showFocus = false
 
@@ -17,6 +19,7 @@ struct ContentView: View {
         .fontDesign(.rounded)
         .fullScreenCover(isPresented: $showFocus) {
             FocusView(mode: mode)
+                .environment(pro)
                 .tint(Theme.accent)
                 .fontDesign(.rounded)
         }
@@ -33,6 +36,8 @@ struct ContentView: View {
 
 struct TaskListView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(ProStore.self) private var pro
     @Query private var items: [TaskItem]
 
     let mode: TaskMode
@@ -42,6 +47,14 @@ struct TaskListView: View {
     @State private var newTitle = ""
     @State private var newIsThought = false
     @State private var selected: TaskItem?
+
+    // No-shame rollover
+    @AppStorage(NewDayStore.acknowledgedKey, store: AppGroup.defaults) private var acknowledgedDay = ""
+    @AppStorage(NewDayStore.laterExpandedKey, store: AppGroup.defaults) private var laterExpanded = false
+    @State private var today = Calendar.current.startOfDay(for: .now)
+    @State private var showCarryOver = false
+    @State private var confirmFreshStart = false
+    @State private var showSettings = false
 
     init(mode: TaskMode, modeRaw: Binding<String>, showFocus: Binding<Bool>) {
         self.mode = mode
@@ -56,7 +69,25 @@ struct TaskListView: View {
 
     private var openTasks: [TaskItem] { FocusEngine.openTasks(items) }
     private var thoughts: [TaskItem] { items.filter { $0.isThought } }
-    private var doneToday: [TaskItem] { items.filter { !$0.isThought && $0.completedToday } }
+    private var laterTasks: [TaskItem] { FocusEngine.laterTasks(items) }
+    private var doneToday: [TaskItem] {
+        items.filter { !$0.isThought && $0.isDone && ($0.completedAt ?? .distantPast) >= today }
+    }
+
+    /// Open tasks added before today: they came along from an earlier day.
+    private var carriedOver: [TaskItem] { openTasks.filter { $0.createdAt < today } }
+
+    private var doneYesterday: Int {
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today) ?? today
+        return items.filter {
+            guard !$0.isThought, $0.isDone, let done = $0.completedAt else { return false }
+            return done >= yesterday && done < today
+        }.count
+    }
+
+    private var showNewDay: Bool {
+        acknowledgedDay != NewDayStore.dayKey(today) && !carriedOver.isEmpty
+    }
 
     var body: some View {
         List {
@@ -69,6 +100,20 @@ struct TaskListView: View {
                 .pickerStyle(.segmented)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
+            }
+
+            if showNewDay {
+                Section {
+                    NewDayCard(
+                        carriedOver: carriedOver.count,
+                        doneYesterday: doneYesterday,
+                        onKeep: acknowledgeNewDay,
+                        onChoose: { showCarryOver = true }
+                    )
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
             }
 
             if let next = openTasks.first {
@@ -89,7 +134,17 @@ struct TaskListView: View {
                     TaskRow(task: task, onChange: save, onOpen: { selected = task })
                         .listRowBackground(Theme.paper)
                         .listRowSeparatorTint(Theme.separator)
-                        .swipeActions { deleteButton(task) }
+                        .swipeActions {
+                            // First action = full swipe, so a long swipe parks instead of deleting.
+                            Button {
+                                withAnimation { task.moveToLater() }
+                                save()
+                            } label: {
+                                Label("Later", systemImage: "moon.zzz")
+                            }
+                            .tint(Theme.accent)
+                            deleteButton(task)
+                        }
                         .swipeActions(edge: .leading) {
                             Button {
                                 task.isPinned.toggle()
@@ -131,6 +186,49 @@ struct TaskListView: View {
                 }
             }
 
+            if !laterTasks.isEmpty {
+                Section {
+                    if laterExpanded {
+                        ForEach(laterTasks) { task in
+                            TaskRow(task: task, onChange: save, onOpen: { selected = task })
+                                .listRowBackground(Theme.paper)
+                                .listRowSeparatorTint(Theme.separator)
+                                .swipeActions { deleteButton(task) }
+                                .swipeActions(edge: .leading) {
+                                    Button {
+                                        withAnimation { task.bringBack() }
+                                        save()
+                                    } label: {
+                                        Label("Bring back", systemImage: "arrow.uturn.up")
+                                    }
+                                    .tint(Theme.accent)
+                                }
+                        }
+                    }
+                } header: {
+                    Button {
+                        withAnimation { laterExpanded.toggle() }
+                    } label: {
+                        HStack(spacing: 6) {
+                            SectionLabel(verbatim: Text("Later · \(laterTasks.count)"))
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(Theme.inkSoft)
+                                .rotationEffect(.degrees(laterExpanded ? 90 : 0))
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint(laterExpanded ? Text("Hides parked tasks") : Text("Shows parked tasks"))
+                } footer: {
+                    if laterExpanded {
+                        Text("Out of sight, on purpose. Swipe right to bring one back.")
+                            .foregroundStyle(Theme.inkSoft)
+                    }
+                }
+            }
+
             if !doneToday.isEmpty {
                 Section {
                     ForEach(doneToday) { task in
@@ -150,6 +248,7 @@ struct TaskListView: View {
         .background(Theme.fog)
         .foregroundStyle(Theme.ink)
         .animation(.default, value: items.map(\.isDone))
+        .animation(.default, value: showNewDay)
         .sensoryFeedback(trigger: doneToday.count) { old, new in
             new > old ? .success : nil
         }
@@ -161,6 +260,80 @@ struct TaskListView: View {
                 .tint(Theme.accent)
                 .fontDesign(.rounded)
         }
+        .sheet(isPresented: $showCarryOver) {
+            CarryOverSheet(tasks: carriedOver) { parked in
+                withAnimation {
+                    parked.forEach { $0.moveToLater() }
+                    acknowledgeNewDay()
+                }
+                save()
+            }
+            .tint(Theme.accent)
+            .fontDesign(.rounded)
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+                .environment(pro)
+                .tint(Theme.accent)
+                .fontDesign(.rounded)
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button {
+                        confirmFreshStart = true
+                    } label: {
+                        Label("Fresh start", systemImage: "leaf")
+                    }
+                    .disabled(openTasks.isEmpty)
+
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Label("Settings", systemImage: "gearshape")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .accessibilityLabel(Text("More"))
+                }
+            }
+        }
+        .confirmationDialog(
+            Text("Fresh start?"),
+            isPresented: $confirmFreshStart,
+            titleVisibility: .visible
+        ) {
+            Button("Park everything in Later") { freshStart() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("All ^[\(openTasks.count) open task](inflect: true) move to Later. Nothing is deleted, and you can bring them back anytime.")
+        }
+        .onChange(of: scenePhase) {
+            if scenePhase == .active { refreshToday() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged).receive(on: RunLoop.main)) { _ in
+            refreshToday()
+        }
+    }
+
+    // MARK: Rollover
+
+    private func refreshToday() {
+        let start = Calendar.current.startOfDay(for: .now)
+        if start != today { today = start }
+    }
+
+    private func acknowledgeNewDay() {
+        acknowledgedDay = NewDayStore.dayKey(today)
+    }
+
+    /// Parks every open task in Later. A clean slate, without losing anything.
+    private func freshStart() {
+        withAnimation {
+            openTasks.forEach { $0.moveToLater() }
+            acknowledgeNewDay()
+        }
+        save()
     }
 
     private func deleteButton(_ task: TaskItem) -> some View {
@@ -328,5 +501,6 @@ struct QuickAddBar: View {
 
 #Preview {
     ContentView()
+        .environment(ProStore())
         .modelContainer(for: [TaskItem.self, TaskStep.self], inMemory: true)
 }

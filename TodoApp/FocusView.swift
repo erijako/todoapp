@@ -5,6 +5,7 @@ import SwiftData
 struct FocusView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @Environment(ProStore.self) private var pro
     @Query private var items: [TaskItem]
 
     let mode: TaskMode
@@ -12,6 +13,7 @@ struct FocusView: View {
     @AppStorage(FocusTimerStore.key, store: AppGroup.defaults) private var timerData: Data?
     @State private var celebrateTrigger = 0
     @State private var breakdownTask: TaskItem?
+    @State private var showPaywall = false
 
     init(mode: TaskMode) {
         self.mode = mode
@@ -55,6 +57,12 @@ struct FocusView: View {
         .task { await FocusTimerController.cleanUpIfExpired() }
         .sheet(item: $breakdownTask) { task in
             TaskDetailView(task: task)
+                .tint(Theme.accent)
+                .fontDesign(.rounded)
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+                .environment(pro)
                 .tint(Theme.accent)
                 .fontDesign(.rounded)
         }
@@ -199,9 +207,20 @@ struct FocusView: View {
             }
         } else {
             VStack(spacing: 8) {
-                Text("Make time visible")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.inkSoft)
+                HStack(spacing: 6) {
+                    Text("Make time visible")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.inkSoft)
+                    if !pro.isPro {
+                        Text("Pro")
+                            .font(.caption2.weight(.heavy))
+                            .textCase(.uppercase)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2)
+                            .background(Theme.peach, in: Capsule())
+                            .foregroundStyle(Theme.peachInk)
+                    }
+                }
                 HStack(spacing: 8) {
                     timerButton(minutes: 2) { Text("2-min start") }
                     timerButton(minutes: 10) { Text("10 min") }
@@ -213,6 +232,10 @@ struct FocusView: View {
 
     private func timerButton(minutes: Int, @ViewBuilder label: () -> Text) -> some View {
         Button {
+            guard pro.isPro else {
+                showPaywall = true
+                return
+            }
             Task { await FocusTimerController.start(minutes: minutes, mode: mode) }
         } label: {
             label()

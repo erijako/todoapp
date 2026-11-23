@@ -9,6 +9,9 @@ options:
     iOS: "17.0"
   createIntermediateGroups: true
 
+fileGroups:
+  - StoreKit
+
 settings:
   base:
     SWIFT_VERSION: "5.0"
@@ -52,7 +55,9 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     dependencies:
       - target: TodoWidget
-    scheme: {}
+    scheme:
+      # Local StoreKit testing in Xcode (no App Store Connect needed).
+      storeKitConfiguration: StoreKit/Products.storekit
 
   TodoWidget:
     type: app-extension

@@ -25,9 +25,28 @@ struct TaskDetailView: View {
 
                     Toggle("Thought (not a task)", isOn: $task.isThought)
                         .listRowBackground(Theme.paper)
-                    if !task.isThought {
-                        Toggle("Pin as next", isOn: $task.isPinned)
-                            .listRowBackground(Theme.paper)
+                    if !task.isThought && !task.isDone {
+                        Toggle("Pin as next", isOn: Binding(
+                            get: { task.isPinned },
+                            set: { pinned in
+                                task.isPinned = pinned
+                                if pinned { task.isLater = false }
+                            }
+                        ))
+                        .listRowBackground(Theme.paper)
+
+                        Toggle(isOn: Binding(
+                            get: { task.isLater },
+                            set: { later in later ? task.moveToLater() : task.bringBack() }
+                        )) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Later")
+                                Text("Out of sight until you bring it back")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.inkSoft)
+                            }
+                        }
+                        .listRowBackground(Theme.paper)
                     }
                 }
 
