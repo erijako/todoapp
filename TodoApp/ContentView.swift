@@ -4,12 +4,13 @@ import WidgetKit
 
 struct ContentView: View {
     @AppStorage(ModeStore.key, store: AppGroup.defaults) private var modeRaw = TaskMode.personal.rawValue
+    @State private var showFocus = false
 
     private var mode: TaskMode { TaskMode(rawValue: modeRaw) ?? .personal }
 
     var body: some View {
         NavigationStack {
-            TaskListView(mode: mode)
+            TaskListView(mode: mode, showFocus: $showFocus)
                 .navigationTitle(Text(mode.title))
                 .toolbar {
                     ToolbarItem(placement: .principal) {
@@ -24,8 +25,16 @@ struct ContentView: View {
                     }
                 }
         }
+        .fullScreenCover(isPresented: $showFocus) {
+            FocusView(mode: mode)
+        }
         .onChange(of: modeRaw) {
             WidgetCenter.shared.reloadAllTimelines()
+        }
+        .onOpenURL { url in
+            if url.scheme == AppLink.scheme, url.host == "focus" {
+                showFocus = true
+            }
         }
     }
 }
@@ -35,13 +44,16 @@ struct TaskListView: View {
     @Query private var items: [TaskItem]
 
     let mode: TaskMode
+    @Binding var showFocus: Bool
 
     @State private var newTitle = ""
     @State private var newIsThought = false
-    @State private var showDone = false
+    @State private var showDone = true
+    @State private var selected: TaskItem?
 
-    init(mode: TaskMode) {
+    init(mode: TaskMode, showFocus: Binding<Bool>) {
         self.mode = mode
+        self._showFocus = showFocus
         let raw = mode.rawValue
         _items = Query(
             filter: #Predicate<TaskItem> { $0.modeRaw == raw },
@@ -49,31 +61,47 @@ struct TaskListView: View {
         )
     }
 
-    private var openTasks: [TaskItem] { items.filter { !$0.isThought && !$0.isDone } }
+    private var openTasks: [TaskItem] { FocusEngine.openTasks(items) }
     private var thoughts: [TaskItem] { items.filter { $0.isThought } }
-    private var doneTasks: [TaskItem] { items.filter { !$0.isThought && $0.isDone } }
+    private var doneToday: [TaskItem] { items.filter { !$0.isThought && $0.completedToday } }
 
     var body: some View {
         List {
+            if let next = openTasks.first {
+                Section {
+                    UpNextCard(task: next) { showFocus = true }
+                }
+            }
+
             Section("Tasks") {
                 if openTasks.isEmpty {
                     Text("Nothing to do. Nice!")
                         .foregroundStyle(.secondary)
                 }
                 ForEach(openTasks) { task in
-                    TaskRow(task: task, onChange: save)
+                    TaskRow(task: task, onChange: save, onOpen: { selected = task })
                         .swipeActions { deleteButton(task) }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                task.isPinned.toggle()
+                                save()
+                            } label: {
+                                Label(task.isPinned ? "Unpin" : "Pin", systemImage: task.isPinned ? "pin.slash" : "pin")
+                            }
+                            .tint(.orange)
+                        }
                 }
             }
 
             if !thoughts.isEmpty {
                 Section("Thoughts") {
                     ForEach(thoughts) { thought in
-                        TaskRow(task: thought, onChange: save)
+                        TaskRow(task: thought, onChange: save, onOpen: { selected = thought })
                             .swipeActions { deleteButton(thought) }
                             .swipeActions(edge: .leading) {
                                 Button {
                                     thought.isThought = false
+                                    thought.sortOrder = Date.now.timeIntervalSince1970
                                     save()
                                 } label: {
                                     Label("Make task", systemImage: "checklist")
@@ -84,21 +112,27 @@ struct TaskListView: View {
                 }
             }
 
-            if !doneTasks.isEmpty {
+            if !doneToday.isEmpty {
                 Section(isExpanded: $showDone) {
-                    ForEach(doneTasks) { task in
-                        TaskRow(task: task, onChange: save)
+                    ForEach(doneToday) { task in
+                        TaskRow(task: task, onChange: save, onOpen: { selected = task })
                             .swipeActions { deleteButton(task) }
                     }
                 } header: {
-                    Text("Done (\(doneTasks.count))")
+                    Text("Done today (\(doneToday.count))")
                 }
             }
         }
         .listStyle(.sidebar)
         .animation(.default, value: items.map(\.isDone))
+        .sensoryFeedback(trigger: doneToday.count) { old, new in
+            new > old ? .success : nil
+        }
         .safeAreaInset(edge: .bottom) {
             QuickAddBar(text: $newTitle, isThought: $newIsThought, onSubmit: add)
+        }
+        .sheet(item: $selected) { task in
+            TaskDetailView(task: task)
         }
     }
 
@@ -120,14 +154,48 @@ struct TaskListView: View {
     }
 
     private func save() {
-        try? context.save()
-        WidgetCenter.shared.reloadAllTimelines()
+        context.saveAndRefresh()
+    }
+}
+
+struct UpNextCard: View {
+    let task: TaskItem
+    let onFocus: () -> Void
+
+    var body: some View {
+        Button(action: onFocus) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Up next")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                    Text(task.currentStep?.title ?? task.title)
+                        .font(.headline)
+                        .foregroundStyle(Color.primary)
+                    if task.currentStep != nil {
+                        Text(task.title)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                Label("Focus", systemImage: "scope")
+                    .font(.subheadline.bold())
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.accentColor, in: Capsule())
+                    .foregroundStyle(Color.white)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
     }
 }
 
 struct TaskRow: View {
     let task: TaskItem
     let onChange: () -> Void
+    let onOpen: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -136,20 +204,37 @@ struct TaskRow: View {
                     .foregroundStyle(.yellow)
             } else {
                 Button {
-                    task.toggleDone()
+                    withAnimation(.spring) { task.toggleDone() }
                     onChange()
                 } label: {
                     Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
                         .font(.title3)
                         .foregroundStyle(task.isDone ? Color.accentColor : Color.secondary)
+                        .symbolEffect(.bounce, value: task.isDone)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(task.isDone ? Text("Mark as not done") : Text("Mark as done"))
             }
 
-            Text(task.title)
-                .strikethrough(task.isDone)
-                .foregroundStyle(task.isDone ? Color.secondary : Color.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(task.title)
+                    .strikethrough(task.isDone)
+                    .foregroundStyle(task.isDone ? Color.secondary : Color.primary)
+                if task.stepCount > 0 && !task.isDone {
+                    Text("\(task.doneStepCount)/\(task.stepCount) steps")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onOpen)
+
+            if task.isPinned && !task.isDone {
+                Image(systemName: "pin.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
         }
     }
 }
@@ -197,5 +282,5 @@ struct QuickAddBar: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: TaskItem.self, inMemory: true)
+        .modelContainer(for: [TaskItem.self, TaskStep.self], inMemory: true)
 }

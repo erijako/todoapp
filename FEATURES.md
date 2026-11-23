@@ -46,6 +46,19 @@ Platform: **iOS first** (native SwiftUI). Language: **English** by default, **No
 8. **Satisfying check-off** (animation + haptics) and a "Done today" list
 9. **Pro subscription** (StoreKit 2) with free trial
 
+## v1.1 — Couples (big launch update)
+
+> **"Stop nagging. Let the lock screen remind them."**
+
+- [ ] Shared space with a partner (or roommate / family), next to your private lists
+- [ ] Partner adds a reminder → shows up as a gentle nudge on your lock screen
+- [ ] Accept / snooze / decline shared tasks — the person with ADHD stays in control
+- [ ] Private stays private; no "they haven't done it yet" surveillance
+- [ ] Kind tone: "Alex added a reminder 💛", never "OVERDUE"
+- [ ] Couples plan: one subscription covers two people (~$49.99/yr)
+- [ ] Invite flow as a built-in growth loop
+- Tech: CloudKit sharing or own backend (decide before v1.1)
+
 ## v1.x
 
 - Gentle repeating nudges (notifications that come back until handled)

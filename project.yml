@@ -35,6 +35,10 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLName: com.erijako.todoapp
+            CFBundleURLSchemes:
+              - todoapp
     entitlements:
       path: TodoApp/TodoApp.entitlements
       properties:
