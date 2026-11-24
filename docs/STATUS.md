@@ -60,7 +60,9 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 1. **Sharing (v1.1):** step 1 built (see Half-done). Next: **step 2, CloudKit** (zone + records,
    `CKSyncEngine` for private and shared databases, invite via share sheet, accept → S2 join
-   screen). Owner: portal setup (iCloud container + Push Notifications) before the entitlements commit.
+   screen). Portal setup done 2026-11-24 (container `iCloud.com.erijako.onestep`, iCloud + Push on
+   the App ID); entitlements + `UIBackgroundModes`/`CKSharingSupported` are in `project.yml`.
+   **Unverified: the next TestFlight run** is the first signed build with them (check the export step).
 2. **Validate the business idea** with `/startup-design` and adjust the plan.
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
 4. **Landing page + waitlist** on GitHub Pages in the brand style.

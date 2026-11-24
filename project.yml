@@ -39,6 +39,10 @@ targets:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
         NSSupportsLiveActivities: true
+        # v1.1 Sharing: CloudKit silent pushes + accepting iCloud share links.
+        UIBackgroundModes:
+          - remote-notification
+        CKSharingSupported: true
         CFBundleURLTypes:
           - CFBundleURLName: com.erijako.onestep
             CFBundleURLSchemes:
@@ -48,12 +52,27 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.erijako.onestep
+        # v1.1 Sharing (enabled on the App ID 2026-11-24). Environments differ per configuration
+        # so local Debug builds use development and TestFlight/App Store use production.
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.erijako.onestep
+        com.apple.developer.icloud-services:
+          - CloudKit
+        com.apple.developer.icloud-container-environment: $(ICLOUD_CONTAINER_ENVIRONMENT)
+        aps-environment: $(APS_ENVIRONMENT)
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.erijako.onestep
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+      configs:
+        Debug:
+          APS_ENVIRONMENT: development
+          ICLOUD_CONTAINER_ENVIRONMENT: Development
+        Release:
+          APS_ENVIRONMENT: production
+          ICLOUD_CONTAINER_ENVIRONMENT: Production
     dependencies:
       - target: TodoWidget
     scheme:

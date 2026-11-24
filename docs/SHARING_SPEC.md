@@ -113,7 +113,7 @@ instead. Must be tested on two real devices.
 Notification permission: asked the first time you join or create a space (with a one-line
 reason), not at launch.
 
-## Setup outside the code (owner, Apple Developer portal)
+## Setup outside the code (owner, Apple Developer portal): steps 1–3 done 2026-11-24
 
 1. App ID `com.erijako.onestep`: enable **iCloud** (CloudKit) and **Push Notifications**.
 2. Create the container `iCloud.com.erijako.onestep` and assign it to the App ID.
