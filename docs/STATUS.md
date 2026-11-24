@@ -32,7 +32,6 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
   button. **Debug builds only** (`SharingStore.isEnabled`); no CloudKit, no invites, no
   notifications, no S2 join screen yet. Try it: Settings → "Sharing: load demo space" /
   "simulate incoming reminder". `TaskItem` gained `from*` fields (lightweight migration).
-
 - **Purchases untested**: needs App Store Connect products (after account approval) or a Mac with
   the StoreKit config.
 - **Privacy policy**: `[DEVELOPER NAME]`, `[CONTACT EMAIL]`, `[DATE]` placeholders; GitHub Pages
