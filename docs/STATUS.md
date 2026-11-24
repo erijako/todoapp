@@ -58,7 +58,7 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 5. **Unit tests in CI**: FocusEngine order, rollover (carried over, done today), Later, Pro
    entitlement mapping.
 
-## When Apple approves the developer account
+## Apple Developer account: approved 2026-11-24 (setup in progress)
 
 Follow `docs/testflight.md`, then: Paid Applications agreement + bank/tax, create the three Pro
 products, sandbox tester, first TestFlight build, fill in the privacy placeholders.
