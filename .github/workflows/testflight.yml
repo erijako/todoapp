@@ -43,7 +43,11 @@ jobs:
           printf '%s' "$KEY_P8" > "$RUNNER_TEMP/keys/AuthKey.p8"
           echo "KEY_PATH=$RUNNER_TEMP/keys/AuthKey.p8" >> "$GITHUB_ENV"
 
-      - name: Archive (signed, automatic signing via API key)
+      # Runners are thrown away after each run, so a development certificate's private key
+      # never survives. Instead: ad-hoc sign the archive (keeps entitlements such as the App
+      # Group, needs no certificate), then let Apple's cloud-managed distribution certificate
+      # sign the export via the API key.
+      - name: Archive (ad-hoc signed)
         run: |
           set -o pipefail
           xcodebuild archive \
@@ -52,17 +56,16 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/TodoApp.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY_PATH" \
-            -authenticationKeyID "$KEY_ID" \
-            -authenticationKeyIssuerID "$ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" \
-            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="-" \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            PROVISIONING_PROFILE_SPECIFIER="" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             | tee archive.log | grep -E "error:|warning:|ARCHIVE (SUCCEEDED|FAILED)" || true
           grep -q "ARCHIVE SUCCEEDED" archive.log
 
-      - name: Export and upload to App Store Connect
+      - name: Export (cloud signing) and upload to App Store Connect
         run: |
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
