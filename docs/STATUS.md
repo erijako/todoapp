@@ -33,7 +33,8 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
   paid plan). `Legal.privacy` already points to https://erijako.github.io/todoapp/privacy.html.
 - **Brand not in the app yet**: screens and onboarding still use the plain Calm & Soft look; the warm
   stone and glow color only exist in the icon and on the canvas.
-- **TestFlight workflow never run**: will need the steps in `docs/testflight.md`.
+- **TestFlight**: account set up (App IDs, App Group, app record, API key, secrets, a device).
+  Archive works; signing switched to temporary per-run certificates; first upload in progress.
 - **Localization**: some onboarding strings are built from `String` ternaries and won't be picked up
   by the String Catalog.
 

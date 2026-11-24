@@ -32,9 +32,15 @@ unsigned for the simulator.
 Runner: `macos-15-intel` because the arm64 runners were capacity-constrained.
 Rejected: committing a hand-made `.xcodeproj` (unmaintainable without Xcode); renting a Mac.
 
-**TestFlight from GitHub Actions with an App Store Connect API key** (automatic cloud signing).
-Workflow is ready but disabled (`TESTFLIGHT_ENABLED` repo variable) until the developer account
-is approved. Rejected: fastlane match (needs a certificates repo and more setup).
+**TestFlight from GitHub Actions with an App Store Connect API key, temporary signing per run.**
+The archive is ad-hoc signed (keeps the App Group entitlement, needs no certificate). A Ruby script
+(`.github/scripts/asc_signing.rb`) creates a distribution certificate and App Store profiles through
+the API, the export is signed with them, `altool` uploads, and the certificate is revoked and the
+profiles deleted at the end. Runs only when the `TESTFLIGHT_ENABLED` repo variable is `true`.
+Rejected after trying: automatic signing in the archive (fresh runners lose the development
+certificate's private key, so Apple refuses a new one) and cloud-managed signing on export
+("Authentication failed"). Also rejected: fastlane match (needs a certificates repo) and storing a
+.p12 in secrets (needs a Mac or manual key handling).
 
 **Data stays on device.** SwiftData in an App Group container shared with the widget.
 No accounts, no servers, no analytics. Privacy label: Data Not Collected.

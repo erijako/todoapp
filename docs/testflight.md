@@ -45,6 +45,13 @@ internal tester and install it with the TestFlight app on your iPhone.
 Build numbers come from the GitHub run number, so every upload is unique automatically.
 Bump `MARKETING_VERSION` in `project.yml` for new versions.
 
+## How signing works
+
+No certificate is stored anywhere. Each run creates a temporary distribution certificate and App
+Store profiles via the API (`.github/scripts/asc_signing.rb`), signs and uploads, then revokes the
+certificate and deletes the profiles. Revoking does not affect builds already uploaded. At least one
+device must be registered in the portal (one is).
+
 ## If it fails
 
 - *"No profiles for … were found"*: the bundle IDs or App Group aren't registered yet (step 2.1).
