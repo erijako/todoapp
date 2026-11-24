@@ -1,3 +1,4 @@
+import CloudKit
 import Foundation
 import Observation
 import SwiftData
@@ -10,8 +11,9 @@ struct SharingToast: Identifiable, Equatable {
 
 /// Owns the shared space on this device: members, reminders, snoozes.
 ///
-/// Step 1 of the build order: everything is local (a small JSON file in the App Group).
-/// CloudKit sync (`CKSyncEngine`) plugs in behind these same methods in step 2.
+/// The local cache (a small JSON file in the App Group) is the source for the UI. When the space
+/// lives in iCloud, every change is marked dirty and saved; `refresh()` reads the whole zone.
+/// Without a zone (demo data) everything stays local.
 @MainActor
 @Observable
 final class SharingStore {
@@ -20,6 +22,14 @@ final class SharingStore {
 
     private(set) var cache: SharingCache
     var toast: SharingToast?
+    /// A calm line about iCloud trouble, shown in the shared space.
+    var syncMessage: String?
+    /// Set after creating a space so the shared space opens the invite sheet right away.
+    var wantsInvite = false
+
+    /// The live store, for the app delegate's background pushes.
+    static weak var current: SharingStore?
+    private let cloud = SharingCloud()
 
     /// What the last answer changed, so Undo can put it back.
     private struct UndoRecord {
@@ -40,7 +50,11 @@ final class SharingStore {
         } else {
             self.cache = SharingCache()
         }
-        Task { isEnabled = await TestBuild.check() }
+        SharingStore.current = self
+        Task {
+            isEnabled = await TestBuild.check()
+            await refresh()
+        }
     }
 
     nonisolated static var defaultFileURL: URL {
@@ -56,6 +70,17 @@ final class SharingStore {
     var space: SharedSpace? { cache.space }
     var hasSpace: Bool { cache.space != nil }
     var isOwner: Bool { cache.space?.ownerID == cache.myID }
+    var cacheZoneName: String? { cache.zoneName }
+    /// The space lives in iCloud (not demo data).
+    var isCloud: Bool { cache.zoneName != nil }
+
+    private var zoneID: CKRecordZone.ID? {
+        guard let name = cache.zoneName else { return nil }
+        return CKRecordZone.ID(zoneName: name, ownerName: cache.zoneOwner ?? CKCurrentUserDefaultName)
+    }
+
+    /// Whether the zone is in your private database (you created the space).
+    private var ownedByMe: Bool { (cache.zoneOwner ?? CKCurrentUserDefaultName) == CKCurrentUserDefaultName }
 
     var members: [SpaceMember] {
         cache.members.sorted { $0.joinedAt < $1.joinedAt }
@@ -112,30 +137,87 @@ final class SharingStore {
 
     // MARK: Space
 
-    /// Creates your space (S1). Inviting happens through the iCloud share sheet in step 2.
-    func createSpace(name: String, myName: String) {
+    /// Creates your space in iCloud (S1). Invites go out through the share sheet afterwards.
+    func createSpace(name: String, myName: String) async throws {
+        try await cloud.requireAccount()
+        let uid = try await cloud.myUserID()
         let spaceName = name.trimmed.isEmpty ? String(localized: "Home") : name.trimmed
-        cache.space = SharedSpace(name: spaceName, ownerID: myID)
-        cache.members = [SpaceMember(id: myID, displayName: myName.trimmed.isEmpty ? String(localized: "Me") : myName.trimmed, colorIndex: 2)]
-        cache.reminders = []
-        cache.snoozedUntil = [:]
+        let space = SharedSpace(name: spaceName, ownerID: uid)
+        let me = SpaceMember(id: uid, displayName: myName.trimmed.isEmpty ? String(localized: "Me") : myName.trimmed, colorIndex: 2)
+        let zone = try await cloud.createSpace(space, me: me)
+
+        var fresh = SharingCache()
+        fresh.myID = uid
+        fresh.space = space
+        fresh.members = [me]
+        fresh.zoneName = zone.zoneName
+        fresh.zoneOwner = zone.ownerName
+        cache = fresh
+        toast = nil
+        undoRecord = nil
+        syncMessage = nil
+        wantsInvite = true
         persist()
+        await cloud.subscribe(zoneID: zone, ownedByMe: true)
+    }
+
+    /// Joins someone's space from an invite link (S2).
+    func join(_ metadata: CKShare.Metadata, myName: String) async throws {
+        // Your own invite link: nothing to accept.
+        if metadata.participantRole == .owner {
+            await refresh()
+            return
+        }
+        if let space = cache.space, isCloud, cache.zoneName != metadata.share.recordID.zoneID.zoneName {
+            throw SharingCloud.CloudError.alreadyInSpace(space.name)
+        }
+        try await cloud.requireAccount()
+        try await cloud.accept(metadata)
+        let uid = try await cloud.myUserID()
+        let zone = metadata.share.recordID.zoneID
+
+        var fresh = SharingCache()
+        fresh.myID = uid
+        fresh.zoneName = zone.zoneName
+        fresh.zoneOwner = zone.ownerName
+        cache = fresh
+        toast = nil
+        undoRecord = nil
+        syncMessage = nil
+        persist()
+
+        await refresh()
+        let me = SpaceMember(id: uid, displayName: myName.trimmed.isEmpty ? String(localized: "Me") : myName.trimmed,
+                             colorIndex: cache.members.count % Theme.Avatar.palette.count)
+        cache.members.removeAll { $0.id == uid }
+        cache.members.append(me)
+        markDirty(SharingCloud.memberRecordName(uid))
+        await cloud.subscribe(zoneID: zone, ownedByMe: false)
+    }
+
+    /// The share to hand to the invite sheet (owner only).
+    func shareForInvite() async throws -> (CKShare, CKContainer) {
+        guard let zoneID, ownedByMe else { throw SharingCloud.CloudError.noShare }
+        return (try await cloud.share(in: zoneID), cloud.container)
     }
 
     func renameSpace(_ name: String) {
         guard !name.trimmed.isEmpty else { return }
         cache.space?.name = name.trimmed
-        persist()
+        markDirty("space")
     }
 
     func setMyName(_ name: String) {
         guard !name.trimmed.isEmpty, let index = cache.members.firstIndex(where: { $0.id == myID }) else { return }
         cache.members[index].displayName = name.trimmed
-        persist()
+        markDirty(SharingCloud.memberRecordName(myID))
     }
 
     /// Leaves the space (member) or ends it for everyone (owner). Your own tasks stay.
-    func leaveSpace() {
+    func leaveSpace() async {
+        if let zoneID {
+            await cloud.leave(zoneID: zoneID, ownedByMe: ownedByMe, memberRecordName: SharingCloud.memberRecordName(myID))
+        }
         let myID = cache.myID
         cache = SharingCache()
         cache.myID = myID
@@ -156,6 +238,7 @@ final class SharingStore {
                 recipientID: recipient,
                 showAt: showAt
             ))
+            markDirty(cache.reminders[cache.reminders.count - 1].id)
         }
         persist()
     }
@@ -223,7 +306,7 @@ final class SharingStore {
         }
         undoRecord = nil
         toast = nil
-        persist()
+        markDirty(record.reminderID)
     }
 
     func dismissToast() {
@@ -244,7 +327,7 @@ final class SharingStore {
         if let id = task.fromReminderID, let index = cache.reminders.firstIndex(where: { $0.id == id }) {
             cache.reminders[index].state = .handedBack
             cache.reminders[index].answeredAt = .now
-            persist()
+            markDirty(id)
         }
         context.delete(task)
         context.saveAndRefresh()
@@ -259,7 +342,85 @@ final class SharingStore {
         cache.reminders[index].state = state
         cache.reminders[index].answeredAt = .now
         cache.snoozedUntil[reminder.id] = nil
+        markDirty(reminder.id)
+    }
+
+    // MARK: iCloud sync
+
+    /// Remembers that a record changed here and saves it to iCloud (no-op for demo data).
+    private func markDirty(_ recordName: String) {
+        guard isCloud else { persist(); return }
+        var dirty = Set(cache.dirty ?? [])
+        dirty.insert(recordName)
+        cache.dirty = Array(dirty)
         persist()
+        Task { await pushDirty() }
+    }
+
+    /// Reads the whole space from iCloud, keeps local changes that aren't saved yet, then saves them.
+    func refresh() async {
+        guard let zoneID else { return }
+        do {
+            let records = try await cloud.fetchAll(zoneID: zoneID, ownedByMe: ownedByMe)
+            apply(records)
+            syncMessage = nil
+            await pushDirty()
+        } catch let error where SharingCloud.isGone(error) {
+            let name = cache.space?.name ?? String(localized: "Your space")
+            let myID = cache.myID
+            cache = SharingCache()
+            cache.myID = myID
+            persist()
+            syncMessage = String(localized: "\(name) was closed. Your own tasks are all still here.")
+        } catch {
+            syncMessage = String(localized: "Couldn't reach iCloud just now. Changes are saved here and will sync later.")
+        }
+    }
+
+    private func apply(_ records: [CKRecord]) {
+        let dirty = Set(cache.dirty ?? [])
+        var members: [SpaceMember] = []
+        var reminders: [SharedReminder] = []
+        for record in records where !dirty.contains(record.recordID.recordName) {
+            switch record.recordType {
+            case SharingCloud.RecordType.space:
+                if let space = SharingCloud.space(from: record) { cache.space = space }
+            case SharingCloud.RecordType.member:
+                if let member = SharingCloud.member(from: record) { members.append(member) }
+            case SharingCloud.RecordType.reminder:
+                if let reminder = SharingCloud.reminder(from: record) { reminders.append(reminder) }
+            default:
+                break
+            }
+        }
+        // Keep local versions of anything not yet saved.
+        members += cache.members.filter { dirty.contains(SharingCloud.memberRecordName($0.id)) }
+        reminders += cache.reminders.filter { dirty.contains($0.id) }
+        cache.members = members
+        cache.reminders = reminders
+        persist()
+    }
+
+    private func pushDirty() async {
+        guard let zoneID, let dirty = cache.dirty, !dirty.isEmpty else { return }
+        var records: [CKRecord] = []
+        for name in dirty {
+            if name == "space", let space = cache.space {
+                records.append(SharingCloud.record(space, zone: zoneID))
+            } else if let member = cache.members.first(where: { SharingCloud.memberRecordName($0.id) == name }) {
+                records.append(SharingCloud.record(member, zone: zoneID))
+            } else if let reminder = cache.reminders.first(where: { $0.id == name }) {
+                records.append(SharingCloud.record(reminder, zone: zoneID))
+            }
+        }
+        do {
+            try await cloud.save(records, in: cloud.database(ownedByMe: ownedByMe))
+            cache.dirty = (cache.dirty ?? []).filter { !dirty.contains($0) }
+            persist()
+            syncMessage = nil
+        } catch {
+            syncMessage = String(localized: "Couldn't reach iCloud just now. Changes are saved here and will sync later.")
+        }
     }
 
     private func persist() {

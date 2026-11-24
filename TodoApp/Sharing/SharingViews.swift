@@ -76,6 +76,8 @@ struct ShareStartView: View {
 
     @State private var myName = ""
     @State private var spaceName = String(localized: "Home")
+    @State private var isWorking = false
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -116,18 +118,32 @@ struct ShareStartView: View {
             .safeAreaInset(edge: .bottom) {
                 VStack(spacing: 10) {
                     Button {
-                        sharing.createSpace(name: spaceName, myName: myName)
-                        dismiss()
-                        onCreated()
+                        isWorking = true
+                        Task {
+                            defer { isWorking = false }
+                            do {
+                                try await sharing.createSpace(name: spaceName, myName: myName)
+                                dismiss()
+                                onCreated()
+                            } catch {
+                                errorMessage = error.localizedDescription
+                            }
+                        }
                     } label: {
-                        Label("Invite someone", systemImage: "square.and.arrow.up")
-                            .font(.body.weight(.heavy))
-                            .frame(maxWidth: .infinity, minHeight: 56)
+                        ZStack {
+                            if isWorking {
+                                ProgressView().tint(Theme.onAccent)
+                            } else {
+                                Label("Invite someone", systemImage: "square.and.arrow.up")
+                            }
+                        }
+                        .font(.body.weight(.heavy))
+                        .frame(maxWidth: .infinity, minHeight: 56)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(Theme.onAccent)
                     .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.control))
-                    .disabled(myName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(myName.trimmingCharacters(in: .whitespaces).isEmpty || isWorking)
                     .opacity(myName.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1)
 
                     Text("Send the link any way you like. Works with iCloud, so no new account. Up to 5 people.")
@@ -147,6 +163,14 @@ struct ShareStartView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
+            }
+            .alert(Text("Not just yet"), isPresented: Binding(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage ?? "")
             }
         }
     }
@@ -208,11 +232,17 @@ struct SharedSpaceView: View {
     @State private var editingName = false
     @State private var draft = ""
     @State private var confirmLeave = false
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    if let message = sharing.syncMessage {
+                        Label(message, systemImage: "icloud")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.inkSoft)
+                    }
                     Text("Your shared space · ^[\(sharing.members.count) person](inflect: true)")
                         .foregroundStyle(Theme.inkSoft)
 
@@ -228,7 +258,7 @@ struct SharedSpaceView: View {
                                 .accessibilityElement(children: .combine)
                             }
                             if sharing.canInviteMore {
-                                Button { showInviteInfo = true } label: {
+                                Button { invite() } label: {
                                     VStack(spacing: 6) {
                                         Circle()
                                             .strokeBorder(Theme.track, style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
@@ -308,6 +338,17 @@ struct SharedSpaceView: View {
                 }
                 .padding(20)
             }
+            .refreshable { await sharing.refresh() }
+            .task {
+                if sharing.wantsInvite {
+                    sharing.wantsInvite = false
+                    // Let this sheet finish appearing before the share sheet goes on top.
+                    try? await Task.sleep(for: .milliseconds(600))
+                    invite()
+                } else {
+                    await sharing.refresh()
+                }
+            }
             .background(Theme.fog)
             .foregroundStyle(Theme.ink)
             .navigationTitle(Text(sharing.space?.name ?? ""))
@@ -361,10 +402,18 @@ struct SharedSpaceView: View {
                 Button("Save") { sharing.setMyName(draft) }
                 Button("Cancel", role: .cancel) {}
             }
-            .alert(Text("Invites are on the way"), isPresented: $showInviteInfo) {
+            .alert(Text("This is demo data"), isPresented: $showInviteInfo) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("Inviting through iCloud comes in the next build. For now, try the demo data in Settings.")
+                Text("Invites need a real space. Leave the demo space, then start sharing from the button at the top of your list.")
+            }
+            .alert(Text("Not just yet"), isPresented: Binding(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage ?? "")
             }
             .confirmationDialog(
                 sharing.isOwner ? Text("Stop sharing \(sharing.space?.name ?? "")?") : Text("Leave \(sharing.space?.name ?? "")?"),
@@ -372,8 +421,10 @@ struct SharedSpaceView: View {
                 titleVisibility: .visible
             ) {
                 Button(sharing.isOwner ? LocalizedStringKey("Stop sharing") : LocalizedStringKey("Leave")) {
-                    sharing.leaveSpace()
-                    dismiss()
+                    Task {
+                        await sharing.leaveSpace()
+                        dismiss()
+                    }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
@@ -382,6 +433,30 @@ struct SharedSpaceView: View {
                 } else {
                     Text("You can come back anytime with a new invite. Your tasks stay right where they are.")
                 }
+            }
+        }
+    }
+}
+
+extension SharedSpaceView {
+    /// Opens Apple's share sheet with the space's iCloud invite link.
+    func invite() {
+        guard sharing.isCloud else {
+            showInviteInfo = true
+            return
+        }
+        guard sharing.isOwner else {
+            errorMessage = String(localized: "Only the person who started this space can invite people for now.")
+            return
+        }
+        Task {
+            do {
+                let (share, container) = try await sharing.shareForInvite()
+                InvitePresenter.present(share: share, container: container, title: sharing.space?.name ?? "") {
+                    Task { await sharing.refresh() }
+                }
+            } catch {
+                errorMessage = error.localizedDescription
             }
         }
     }

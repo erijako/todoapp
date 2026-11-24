@@ -129,12 +129,13 @@ struct SettingsView: View {
                             dismiss()
                         }
                         .listRowBackground(Theme.paper)
+                        .disabled(sharing.isCloud)
                         Button("Sharing: simulate incoming reminder") {
                             sharing.simulateIncoming()
                             dismiss()
                         }
                         .listRowBackground(Theme.paper)
-                        .disabled(!sharing.hasSpace)
+                        .disabled(!sharing.hasSpace || sharing.isCloud)
                     }
                 } header: {
                     SectionLabel("Help")

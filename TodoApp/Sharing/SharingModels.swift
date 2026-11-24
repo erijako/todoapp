@@ -63,6 +63,14 @@ struct SharingCache: Codable, Equatable {
     var reminders: [SharedReminder] = []
     /// Local only: "bring it back later" times per reminder id. The sender never sees these.
     var snoozedUntil: [String: Date] = [:]
+
+    // iCloud (nil = demo/local only). Optionals so older cache files still decode.
+    /// The CloudKit zone that holds the space.
+    var zoneName: String?
+    /// The zone's owner (`CKCurrentUserDefaultName` when you own it).
+    var zoneOwner: String?
+    /// Record names changed here but not yet saved to iCloud.
+    var dirty: [String]?
 }
 
 /// Friendly times used by "Later" and by "When should it pop up?".

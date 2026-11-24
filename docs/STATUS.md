@@ -31,9 +31,10 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
   cache (`sharing.json` in the App Group), `SharingStore`, screens S1 start, S3 space, S4 send,
   S5 incoming card + toast with Undo, S6 "From Alex" + Hand it back in task detail, header avatar
   button. **Test builds only** (Debug + TestFlight via `TestBuild`; hidden in the App Store
-  version); no CloudKit, no invites, no
-  notifications, no S2 join screen yet. Try it: Settings → "Sharing: load demo space" /
-  "simulate incoming reminder". `TaskItem` gained `from*` fields (lightweight migration).
+  version). **Step 2 (iCloud) written 2026-11-24, untested**: `SharingCloud` (zone-wide CKShare,
+  whole-zone refresh, dirty-record saves, silent-push subscriptions), invite via
+  `UICloudSharingController`, S2 join screen via `SceneDelegate`. No notifications yet (step 3).
+  Demo without iCloud: Settings → "Sharing: load demo space" / "simulate incoming reminder". `TaskItem` gained `from*` fields (lightweight migration).
 - **Purchases untested**: needs App Store Connect products (after account approval) or a Mac with
   the StoreKit config.
 - **Privacy policy**: `[DEVELOPER NAME]`, `[CONTACT EMAIL]`, `[DATE]` placeholders; GitHub Pages
@@ -60,11 +61,10 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Next 5 tasks (priority order)
 
-1. **Sharing (v1.1):** step 1 built (see Half-done). Next: **step 2, CloudKit** (zone + records,
-   `CKSyncEngine` for private and shared databases, invite via share sheet, accept → S2 join
-   screen). Portal setup done 2026-11-24 (container `iCloud.com.erijako.onestep`, iCloud + Push on
-   the App ID); entitlements + `UIBackgroundModes`/`CKSharingSupported` are in `project.yml`.
-   **Unverified: the next TestFlight run** is the first signed build with them (check the export step).
+1. **Sharing (v1.1):** step 2 (iCloud) written, **untested on devices**. Owner: create the CloudKit
+   schema in CloudKit Console and deploy it to Production (`docs/SHARING_SPEC.md`, setup step 4),
+   then test with two iPhones on TestFlight. Next code: step 3, notifications (local notification
+   when a reminder arrives, Take it / Tonight / Pass actions).
 2. **Validate the business idea** with `/startup-design` and adjust the plan.
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
 4. **Landing page + waitlist** on GitHub Pages in the brand style.

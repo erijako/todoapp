@@ -411,8 +411,14 @@ struct TaskListView: View {
             Text("All ^[\(openTasks.count) open task](inflect: true) move to Later. Nothing is deleted, and you can bring them back anytime.")
         }
         .onChange(of: scenePhase) {
-            if scenePhase == .active { refreshToday() }
+            if scenePhase == .active {
+                refreshToday()
+                Task { await sharing.refresh() }
+            }
         }
+        .modifier(ShareInviteCover {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { showSharedSpace = true }
+        })
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged).receive(on: RunLoop.main)) { _ in
             refreshToday()
         }

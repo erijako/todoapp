@@ -167,5 +167,11 @@ Details decided with them:
 - **Data**: whole-zone `CKShare` in the owner's private database; record types `Space`, `Member`,
   `Reminder` (one per recipient); `CKSyncEngine` with a small local Codable cache.
   Rejected: Core Data + `NSPersistentCloudKitContainer` (a second persistence stack for a few records).
+- **Sync without `CKSyncEngine` (changed while building step 2)**: plain async CloudKit calls.
+  Every refresh reads the whole zone (tiny data), local changes are marked dirty and saved with
+  `.allKeys`; silent pushes (zone subscription for the owner, database subscription for members)
+  trigger a refresh. Rejected: `CKSyncEngine` (state serialization and event handling for a few
+  dozen records; harder to get right without a local Xcode).
+- **Only the owner invites** (v1.1), from the shared space. Members see a kind note instead.
 - **Entitlements land only after the portal setup**, because TestFlight export keeps the archive's
   entitlements and would fail on an App ID without iCloud/Push.

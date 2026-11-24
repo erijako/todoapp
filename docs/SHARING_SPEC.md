@@ -120,8 +120,14 @@ reason), not at launch.
 3. Then add to `project.yml` (app target only): entitlements
    `com.apple.developer.icloud-container-identifiers`, `com.apple.developer.icloud-services: [CloudKit]`,
    `aps-environment`, and Info.plist `UIBackgroundModes: [remote-notification]`, `CKSharingSupported: true`.
-4. After the first run, deploy the CloudKit schema from Development to Production in the
-   CloudKit Console before a TestFlight/App Store build uses it.
+4. **CloudKit schema** (TestFlight and the App Store use the Production environment, which never
+   creates record types by itself). In CloudKit Console → `iCloud.com.erijako.onestep` →
+   Development → Schema → Record Types, create:
+   - `Space`: `name` (String), `ownerID` (String)
+   - `Member`: `displayName` (String), `colorIndex` (Int(64)), `joinedAt` (Date/Time)
+   - `Reminder`: `title`, `note`, `senderID`, `recipientID`, `state` (String);
+     `showAt`, `createdAt`, `answeredAt` (Date/Time)
+   No indexes are needed (the app reads whole zones). Then "Deploy Schema Changes…" to Production.
 
 **Order matters**: the TestFlight workflow keeps the archive's entitlements and signs via the API,
 so adding the iCloud/push entitlements **before** step 1–2 would break TestFlight export. The code
