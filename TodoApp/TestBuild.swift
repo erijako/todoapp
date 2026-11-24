@@ -12,9 +12,14 @@ enum TestBuild {
         #endif
     }
 
-    /// TestFlight and sandbox installs report a non-production App Store environment.
+    /// Known without waiting: Debug builds, and TestFlight installs (they carry a sandbox receipt).
+    static var isKnownTestInstall: Bool {
+        isDebug || Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+    }
+
+    /// Also asks StoreKit: TestFlight and sandbox installs report a non-production environment.
     static func check() async -> Bool {
-        if isDebug { return true }
+        if isKnownTestInstall { return true }
         if case .verified(let transaction)? = try? await AppTransaction.shared {
             return transaction.environment != .production
         }

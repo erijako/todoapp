@@ -18,7 +18,7 @@ struct SharingToast: Identifiable, Equatable {
 @Observable
 final class SharingStore {
     /// Sharing is shown in test builds (Debug + TestFlight) only, until CloudKit sync is done.
-    private(set) var isEnabled = TestBuild.isDebug
+    private(set) var isEnabled = TestBuild.isKnownTestInstall
 
     private(set) var cache: SharingCache
     var toast: SharingToast?

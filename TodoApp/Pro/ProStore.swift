@@ -44,7 +44,7 @@ final class ProStore {
 
     /// True in Debug builds and in TestFlight / Xcode / sandbox installs. Never in the App Store
     /// version, so the simulated purchase can't unlock Pro for real customers.
-    private(set) var canSimulate = TestBuild.isDebug
+    private(set) var canSimulate = TestBuild.isKnownTestInstall
     /// Pro unlocked by the "Simulate purchase" button instead of a real purchase.
     private(set) var isSimulated = false
     private static let simulatedKey = "proSimulated"

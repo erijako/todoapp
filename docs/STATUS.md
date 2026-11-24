@@ -30,7 +30,7 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - **Sharing v1.1, step 1 of 5** (`TodoApp/Sharing/`, spec `docs/SHARING_SPEC.md`): local model and
   cache (`sharing.json` in the App Group), `SharingStore`, screens S1 start, S3 space, S4 send,
   S5 incoming card + toast with Undo, S6 "From Alex" + Hand it back in task detail, header avatar
-  button. **Test builds only** (Debug + TestFlight via `TestBuild`; hidden in the App Store
+  button. **Test builds only** (Debug + TestFlight via `TestBuild`: sandbox receipt or `AppTransaction` environment; hidden in the App Store
   version). **Step 2 (iCloud) written 2026-11-24, untested**: `SharingCloud` (zone-wide CKShare,
   whole-zone refresh, dirty-record saves, silent-push subscriptions), invite via
   `UICloudSharingController`, S2 join screen via `SceneDelegate`. No notifications yet (step 3).
