@@ -34,7 +34,9 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - **Brand not in the app yet**: screens and onboarding still use the plain Calm & Soft look; the warm
   stone and glow color only exist in the icon and on the canvas.
 - **TestFlight**: account set up (App IDs, App Group, app record, API key, secrets, a device).
-  Archive works; signing switched to temporary per-run certificates; first upload in progress.
+  Archive, signing and export work. Apple's upload checks required Xcode 26 (iOS 26 SDK) and an
+  iPhone-only build; both fixed, upload being retried. Building with the iOS 26 SDK also gives
+  system bars and controls the new "Liquid Glass" look; check it on device.
 - **Localization**: some onboarding strings are built from `String` ternaries and won't be picked up
   by the String Catalog.
 

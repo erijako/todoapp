@@ -26,6 +26,10 @@ Rejected: a widget listing several tasks (that's every other app).
 Why: lock screen widgets, interactive App Intents and Live Activities need native iOS.
 Rejected: React Native / Flutter (worse widget and Live Activity support).
 
+**Xcode 26 in CI** (selected per run): App Store Connect requires the iOS 26 SDK for uploads
+(iOS 27 SDK from April 2027). iPhone only: `TARGETED_DEVICE_FAMILY: "1"` is set on each target,
+because XcodeGen's target defaults override the project-level value.
+
 **No Mac: XcodeGen + GitHub Actions.**
 Why: the owner has no Mac. `project.yml` generates the Xcode project in CI; every push builds
 unsigned for the simulator.
