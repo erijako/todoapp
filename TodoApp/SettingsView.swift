@@ -121,18 +121,21 @@ struct SettingsView: View {
                         dismiss()
                     }
                     .listRowBackground(Theme.paper)
-                    Button("Sharing: load demo space") {
-                        sharing.loadDemo()
-                        dismiss()
-                    }
-                    .listRowBackground(Theme.paper)
-                    Button("Sharing: simulate incoming reminder") {
-                        sharing.simulateIncoming()
-                        dismiss()
-                    }
-                    .listRowBackground(Theme.paper)
-                    .disabled(!sharing.hasSpace)
                     #endif
+                    // Test builds only: try Sharing before iCloud invites work.
+                    if sharing.isEnabled {
+                        Button("Sharing: load demo space") {
+                            sharing.loadDemo()
+                            dismiss()
+                        }
+                        .listRowBackground(Theme.paper)
+                        Button("Sharing: simulate incoming reminder") {
+                            sharing.simulateIncoming()
+                            dismiss()
+                        }
+                        .listRowBackground(Theme.paper)
+                        .disabled(!sharing.hasSpace)
+                    }
                 } header: {
                     SectionLabel("Help")
                 }

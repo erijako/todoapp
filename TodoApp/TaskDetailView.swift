@@ -5,6 +5,7 @@ import SwiftData
 struct TaskDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(SharingStore.self) private var sharing
     @Bindable var task: TaskItem
 
     @State private var newStep = ""
@@ -13,7 +14,7 @@ struct TaskDetailView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if SharingStore.isEnabled, task.fromReminderID != nil {
+                if sharing.isEnabled, task.fromReminderID != nil {
                     ReminderFromSection(task: task)
                 }
 

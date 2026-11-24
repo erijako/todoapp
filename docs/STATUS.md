@@ -30,7 +30,8 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - **Sharing v1.1, step 1 of 5** (`TodoApp/Sharing/`, spec `docs/SHARING_SPEC.md`): local model and
   cache (`sharing.json` in the App Group), `SharingStore`, screens S1 start, S3 space, S4 send,
   S5 incoming card + toast with Undo, S6 "From Alex" + Hand it back in task detail, header avatar
-  button. **Debug builds only** (`SharingStore.isEnabled`); no CloudKit, no invites, no
+  button. **Test builds only** (Debug + TestFlight via `TestBuild`; hidden in the App Store
+  version); no CloudKit, no invites, no
   notifications, no S2 join screen yet. Try it: Settings → "Sharing: load demo space" /
   "simulate incoming reminder". `TaskItem` gained `from*` fields (lightweight migration).
 - **Purchases untested**: needs App Store Connect products (after account approval) or a Mac with

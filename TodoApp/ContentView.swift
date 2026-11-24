@@ -126,7 +126,7 @@ struct TaskListView: View {
                 .listRowBackground(Color.clear)
             }
 
-            if SharingStore.isEnabled {
+            if sharing.isEnabled {
                 let incoming = sharing.incoming()
                 if let reminder = incoming.first {
                     Section {
@@ -373,7 +373,7 @@ struct TaskListView: View {
                 .fontDesign(.rounded)
         }
         .toolbar {
-            if SharingStore.isEnabled {
+            if sharing.isEnabled {
                 ToolbarItem(placement: .topBarTrailing) {
                     SharedHeaderButton {
                         if sharing.hasSpace { showSharedSpace = true } else { showShareStart = true }

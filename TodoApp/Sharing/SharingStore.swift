@@ -15,14 +15,8 @@ struct SharingToast: Identifiable, Equatable {
 @MainActor
 @Observable
 final class SharingStore {
-    /// Sharing UI is only reachable in Debug builds until CloudKit sync lands.
-    nonisolated static var isEnabled: Bool {
-        #if DEBUG
-        true
-        #else
-        false
-        #endif
-    }
+    /// Sharing is shown in test builds (Debug + TestFlight) only, until CloudKit sync is done.
+    private(set) var isEnabled = TestBuild.isDebug
 
     private(set) var cache: SharingCache
     var toast: SharingToast?
@@ -46,6 +40,7 @@ final class SharingStore {
         } else {
             self.cache = SharingCache()
         }
+        Task { isEnabled = await TestBuild.check() }
     }
 
     nonisolated static var defaultFileURL: URL {
@@ -272,9 +267,8 @@ final class SharingStore {
         try? data.write(to: fileURL, options: .atomic)
     }
 
-    // MARK: Demo data (Debug only)
+    // MARK: Demo data (test builds only, until CloudKit invites work)
 
-    #if DEBUG
     /// Fills the space with the canvas example: Alex, Sam and you in "Home".
     func loadDemo() {
         let alex = "demo-alex", sam = "demo-sam"
@@ -313,7 +307,6 @@ final class SharingStore {
         cache.reminders.append(SharedReminder(title: pick.0, note: pick.1, senderID: sender.id, recipientID: myID))
         persist()
     }
-    #endif
 }
 
 private extension String {
