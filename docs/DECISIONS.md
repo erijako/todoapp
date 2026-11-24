@@ -143,3 +143,23 @@ Rejected: exactly one partner.
 Requires in the developer portal: iCloud (CloudKit) container `iCloud.com.erijako.onestep` on the
 app's App ID, Push Notifications (CloudKit's silent pushes), plus Background Modes → Remote
 notifications in the app. Privacy policy must be updated before this ships.
+
+**Mockups approved 2026-11-24** (canvas row "v1.1 Sharing", S1–S7; spec in `docs/SHARING_SPEC.md`).
+Details decided with them:
+- **Sender sees only "got it" / "not this time"**, "Sent" otherwise. Snooze is invisible to the
+  sender; completion is never shown or synced. Rejected: showing done status (surveillance).
+- **A taken reminder never jumps the queue**: it becomes a normal Personal task at the end of the
+  list and reaches the widget only when it becomes next the normal way.
+  Rejected: pinning it or showing it on the widget straight away.
+- **Entry point is an avatar button in the list header** (dot when something is new), not a third
+  mode next to Personal/Work. Rejected: a "Shared" mode tab.
+- **One shared space per person**, named by its creator, max 5 people.
+  Rejected: several spaces (more UI, little need yet).
+- **"Hand it back"** on a taken reminder returns it to the sender.
+- **Copy: Take it / Later / Pass** (not Accept / Snooze / Decline); "Alex added a reminder" with a
+  heart icon instead of the 💛 emoji.
+- **Data**: whole-zone `CKShare` in the owner's private database; record types `Space`, `Member`,
+  `Reminder` (one per recipient); `CKSyncEngine` with a small local Codable cache.
+  Rejected: Core Data + `NSPersistentCloudKitContainer` (a second persistence stack for a few records).
+- **Entitlements land only after the portal setup**, because TestFlight export keeps the archive's
+  entitlements and would fail on an App ID without iCloud/Push.

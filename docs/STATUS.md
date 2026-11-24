@@ -52,9 +52,10 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Next 5 tasks (priority order)
 
-1. **Sharing (v1.1, decided in DECISIONS.md):** mockups first (invite flow, "Shared" space with
-   members, send-a-reminder sheet, incoming reminder card with accept/snooze/decline, who-sent-it),
-   then a spec, then CloudKit implementation. Portal setup: iCloud container + Push Notifications.
+1. **Sharing (v1.1):** mockups (canvas S1–S7) and spec (`docs/SHARING_SPEC.md`) approved
+   2026-11-24. Next: build order step 1 (model, cache, `SharingStore`, screens with fake data),
+   then CloudKit. Owner: portal setup (iCloud container + Push Notifications) before the
+   entitlements commit.
 2. **Validate the business idea** with `/startup-design` and adjust the plan.
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
 4. **Landing page + waitlist** on GitHub Pages in the brand style.

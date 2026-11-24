@@ -32,7 +32,7 @@ decision is made, in the same commit as the work.
 | `TodoWidget/` | Widget extension: `TasksWidget` (Up Next) and `FocusLiveActivity` |
 | `StoreKit/Products.storekit` | Local StoreKit test config (wired into the scheme) |
 | `design/make_icon.py` | Generates the app icon (light + dark) with Pillow + NumPy |
-| `docs/` | `privacy.html` (GitHub Pages), `testflight.md`, `STATUS.md`, `DECISIONS.md` |
+| `docs/` | `privacy.html` (GitHub Pages), `testflight.md`, `STATUS.md`, `DECISIONS.md`, `SHARING_SPEC.md` (v1.1) |
 | `.github/workflows/` | `ios-build.yml` (every push), `testflight.yml` (off until account approval) |
 | `.claude/skills/` | Third-party startup skills (startup-design etc., MIT) |
 
