@@ -189,6 +189,23 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
             }
 
+            if store.canSimulate {
+                Button {
+                    store.simulatePurchase()
+                } label: {
+                    Label("Simulate purchase (test builds only)", systemImage: "hammer")
+                        .font(.footnote.weight(.bold))
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                                .strokeBorder(Theme.track, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                        )
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Theme.accent)
+                .disabled(isWorking)
+            }
+
             HStack(spacing: 18) {
                 Button("Restore purchases") { restore() }
                 Link("Terms", destination: Legal.terms)

@@ -30,7 +30,11 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Pro is active")
                                     .font(.body.weight(.bold))
-                                if store.activeProductID == ProProduct.lifetime {
+                                if store.isSimulated {
+                                    Text("Simulated for testing. No real purchase.")
+                                        .font(.footnote)
+                                        .foregroundStyle(Theme.inkSoft)
+                                } else if store.activeProductID == ProProduct.lifetime {
                                     Text("Lifetime. Thank you!")
                                         .font(.footnote)
                                         .foregroundStyle(Theme.inkSoft)
@@ -43,7 +47,10 @@ struct SettingsView: View {
                         }
                         .listRowBackground(Theme.paper)
 
-                        if store.activeProductID != ProProduct.lifetime {
+                        if store.isSimulated {
+                            Button("Turn off simulated Pro") { store.endSimulation() }
+                                .listRowBackground(Theme.paper)
+                        } else if store.activeProductID != ProProduct.lifetime {
                             Button("Manage subscription") { showManage = true }
                                 .listRowBackground(Theme.paper)
                         }

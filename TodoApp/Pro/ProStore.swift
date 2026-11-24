@@ -40,6 +40,22 @@ final class ProStore {
 
     private static let cacheKey = "proActive"
 
+    // MARK: Simulated purchase (test builds only)
+
+    /// True in Debug builds and in TestFlight / Xcode / sandbox installs. Never in the App Store
+    /// version, so the simulated purchase can't unlock Pro for real customers.
+    private(set) var canSimulate: Bool = {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }()
+    /// Pro unlocked by the "Simulate purchase" button instead of a real purchase.
+    private(set) var isSimulated = false
+    private static let simulatedKey = "proSimulated"
+    private var simulatedFlag: Bool { AppGroup.defaults.bool(forKey: Self.simulatedKey) }
+
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
 
     init() {
@@ -57,9 +73,31 @@ final class ProStore {
         }
 
         Task {
+            await checkTestEnvironment()
             await refreshEntitlements()
             await loadProducts()
         }
+    }
+
+    /// TestFlight and sandbox installs report a non-production App Store environment.
+    private func checkTestEnvironment() async {
+        guard !canSimulate else { return }
+        if case .verified(let transaction)? = try? await AppTransaction.shared {
+            canSimulate = transaction.environment != .production
+        }
+    }
+
+    /// Unlocks Pro without the App Store, to test Pro features before real purchases work.
+    func simulatePurchase() {
+        guard canSimulate else { return }
+        AppGroup.defaults.set(true, forKey: Self.simulatedKey)
+        Task { await refreshEntitlements() }
+    }
+
+    /// Turns the simulated Pro off again (Settings).
+    func endSimulation() {
+        AppGroup.defaults.set(false, forKey: Self.simulatedKey)
+        Task { await refreshEntitlements() }
     }
 
     // MARK: Products
@@ -137,7 +175,8 @@ final class ProStore {
             }
         }
         activeProductID = active
-        isPro = active != nil
+        isSimulated = active == nil && canSimulate && simulatedFlag
+        isPro = active != nil || isSimulated
         AppGroup.defaults.set(isPro, forKey: Self.cacheKey)
     }
 

@@ -17,6 +17,7 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - Focus timer (2 / 10 / 25 min, +5) with Live Activity and Dynamic Island, "time's up" notification
 - No-shame rollover: Later bucket, new-day card ("Park some"), Fresh start
 - Pro: StoreKit 2 store, paywall, Settings (restore, manage subscription); timer gated
+- "Simulate purchase" on the paywall (Debug + TestFlight only) to test Pro without real products
 - First-launch onboarding (5 screens, widget detection, skip variants); widget guide in Settings
 - Calm & Soft design system, light + dark
 - Name Onestep, warm-stone app icon (light + dark)

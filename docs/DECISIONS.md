@@ -101,6 +101,12 @@ Rejected: showing the paywall after onboarding.
 
 **StoreKit 2, on-device verification, no server.**
 
+**"Simulate purchase" for testing (2026-11-24)**: a button on the paywall unlocks Pro without the
+App Store, so Pro features can be tested before the products exist in App Store Connect. Shown only
+in Debug builds and in non-production installs (TestFlight, Xcode, sandbox, via
+`AppTransaction.environment`); ignored in the App Store version even if the flag is set.
+"Turn off simulated Pro" in Settings.
+
 ## Naming and brand
 
 **Name: Onestep.** Bundle `com.erijako.onestep`, App Group `group.com.erijako.onestep`, URL scheme
