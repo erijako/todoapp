@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-24. Update this file whenever something is finished.
 
-Important caveat: **nothing has run on a real device or simulator yet.** CI only proves the app
+Important caveat: **nothing has been tested on a real device yet** (first TestFlight build just uploaded). CI only proves the app
 compiles. Everything below "works" in the sense that it is built and compiles cleanly.
 
 ## Built (compiles in CI)
@@ -34,8 +34,8 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - **Brand not in the app yet**: screens and onboarding still use the plain Calm & Soft look; the warm
   stone and glow color only exist in the icon and on the canvas.
 - **TestFlight**: account set up (App IDs, App Group, app record, API key, secrets, a device).
-  Archive, signing and export work. Apple's upload checks required Xcode 26 (iOS 26 SDK) and an
-  iPhone-only build; both fixed, upload being retried. Building with the iOS 26 SDK also gives
+  **First build uploaded to TestFlight on 2026-11-24** (workflow run 7, built with Xcode 26).
+  Next: install via TestFlight and test on a real iPhone. Building with the iOS 26 SDK gives
   system bars and controls the new "Liquid Glass" look; check it on device.
 - **Localization**: some onboarding strings are built from `String` ternaries and won't be picked up
   by the String Catalog.
