@@ -16,7 +16,7 @@ struct SharingToast: Identifiable, Equatable {
 @Observable
 final class SharingStore {
     /// Sharing UI is only reachable in Debug builds until CloudKit sync lands.
-    static var isEnabled: Bool {
+    nonisolated static var isEnabled: Bool {
         #if DEBUG
         true
         #else
@@ -48,7 +48,7 @@ final class SharingStore {
         }
     }
 
-    static var defaultFileURL: URL {
+    nonisolated static var defaultFileURL: URL {
         let base = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: AppGroup.identifier)
             ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
