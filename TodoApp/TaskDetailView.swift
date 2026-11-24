@@ -13,6 +13,10 @@ struct TaskDetailView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if SharingStore.isEnabled, task.fromReminderID != nil {
+                    ReminderFromSection(task: task)
+                }
+
                 Section {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Title")

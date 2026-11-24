@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(ProStore.self) private var store
+    @Environment(SharingStore.self) private var sharing
 
     @State private var showPaywall = false
     @State private var showManage = false
@@ -113,6 +114,17 @@ struct SettingsView: View {
                         dismiss()
                     }
                     .listRowBackground(Theme.paper)
+                    Button("Sharing: load demo space") {
+                        sharing.loadDemo()
+                        dismiss()
+                    }
+                    .listRowBackground(Theme.paper)
+                    Button("Sharing: simulate incoming reminder") {
+                        sharing.simulateIncoming()
+                        dismiss()
+                    }
+                    .listRowBackground(Theme.paper)
+                    .disabled(!sharing.hasSpace)
                     #endif
                 } header: {
                     SectionLabel("Help")

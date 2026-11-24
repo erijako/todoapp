@@ -37,6 +37,30 @@ enum Theme {
         static let onAccent = Color(hex: 0x141622)
     }
 
+    // Shared-space avatars: soft fill + readable initial (4.5:1), assigned in join order.
+    enum Avatar {
+        struct Pair {
+            let fill: Color
+            let ink: Color
+        }
+
+        static let palette: [Pair] = [
+            Pair(fill: Color(light: 0xFCEDE2, dark: 0x3A2C24), ink: Color(light: 0x9A5226, dark: 0xE9A57C)), // peach
+            Pair(fill: Color(light: 0xDDEFE8, dark: 0x203A31), ink: Color(light: 0x24594A, dark: 0x9FD8C2)), // green
+            Pair(fill: Color(light: 0xE3E6FA, dark: 0x262B4D), ink: Color(light: 0x2F3A8F, dark: 0xB9C1F7)), // indigo
+            Pair(fill: Color(light: 0xEFE6FA, dark: 0x31264A), ink: Color(light: 0x5A3E9A, dark: 0xCDB8F2)), // lilac
+        ]
+
+        static func pair(_ index: Int) -> Pair {
+            palette[((index % palette.count) + palette.count) % palette.count]
+        }
+    }
+
+    /// Positive, calm "they've got it" green (text on paper, 4.5:1).
+    static let gotIt = Color(light: 0x24594A, dark: 0x9FD8C2)
+    /// The little heart next to "added a reminder".
+    static let heart = Color(light: 0xE09068, dark: 0xE9A57C)
+
     enum Radius {
         // Three shapes only: cards (24), controls (16), and pills (Capsule).
         static let card: CGFloat = 24

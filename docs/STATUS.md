@@ -26,6 +26,13 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Half-done
 
+- **Sharing v1.1, step 1 of 5** (`TodoApp/Sharing/`, spec `docs/SHARING_SPEC.md`): local model and
+  cache (`sharing.json` in the App Group), `SharingStore`, screens S1 start, S3 space, S4 send,
+  S5 incoming card + toast with Undo, S6 "From Alex" + Hand it back in task detail, header avatar
+  button. **Debug builds only** (`SharingStore.isEnabled`); no CloudKit, no invites, no
+  notifications, no S2 join screen yet. Try it: Settings → "Sharing: load demo space" /
+  "simulate incoming reminder". `TaskItem` gained `from*` fields (lightweight migration).
+
 - **Purchases untested**: needs App Store Connect products (after account approval) or a Mac with
   the StoreKit config.
 - **Privacy policy**: `[DEVELOPER NAME]`, `[CONTACT EMAIL]`, `[DATE]` placeholders; GitHub Pages
@@ -52,10 +59,9 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Next 5 tasks (priority order)
 
-1. **Sharing (v1.1):** mockups (canvas S1–S7) and spec (`docs/SHARING_SPEC.md`) approved
-   2026-11-24. Next: build order step 1 (model, cache, `SharingStore`, screens with fake data),
-   then CloudKit. Owner: portal setup (iCloud container + Push Notifications) before the
-   entitlements commit.
+1. **Sharing (v1.1):** step 1 built (see Half-done). Next: **step 2, CloudKit** (zone + records,
+   `CKSyncEngine` for private and shared databases, invite via share sheet, accept → S2 join
+   screen). Owner: portal setup (iCloud container + Push Notifications) before the entitlements commit.
 2. **Validate the business idea** with `/startup-design` and adjust the plan.
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
 4. **Landing page + waitlist** on GitHub Pages in the brand style.

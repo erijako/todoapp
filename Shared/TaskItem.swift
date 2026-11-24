@@ -42,6 +42,12 @@ final class TaskItem {
     var dueDate: Date?
     var sortOrder: Double = 0
 
+    // v1.1 Sharing: set when the task came from someone's reminder (see SharingStore.take).
+    var fromReminderID: String?
+    var fromName: String?
+    var fromNote: String?
+    var fromSentAt: Date?
+
     @Relationship(deleteRule: .cascade, inverse: \TaskStep.task)
     var steps: [TaskStep]? = []
 

@@ -55,6 +55,7 @@ struct TaskListView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Environment(ProStore.self) private var pro
+    @Environment(SharingStore.self) private var sharing
     @Query private var items: [TaskItem]
 
     let mode: TaskMode
@@ -73,6 +74,10 @@ struct TaskListView: View {
     @State private var showCarryOver = false
     @State private var confirmFreshStart = false
     @State private var showSettings = false
+
+    // v1.1 Sharing
+    @State private var showShareStart = false
+    @State private var showSharedSpace = false
 
     init(mode: TaskMode, modeRaw: Binding<String>, showFocus: Binding<Bool>, focusZoom: Namespace.ID) {
         self.mode = mode
@@ -119,6 +124,27 @@ struct TaskListView: View {
                 .pickerStyle(.segmented)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
+            }
+
+            if SharingStore.isEnabled {
+                let incoming = sharing.incoming()
+                if let reminder = incoming.first {
+                    Section {
+                        IncomingReminderCard(reminder: reminder, moreCount: incoming.count - 1)
+                            .id(reminder.id)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                }
+                if let toast = sharing.toast {
+                    Section {
+                        SharingToastRow(toast: toast)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .transition(.opacity)
+                    }
+                }
             }
 
             if showNewDay {
@@ -309,6 +335,7 @@ struct TaskListView: View {
         }
         .sheet(item: $selected) { task in
             TaskDetailView(task: task)
+                .environment(sharing)
                 .tint(Theme.accent)
                 .fontDesign(.rounded)
         }
@@ -326,10 +353,33 @@ struct TaskListView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(pro)
+                .environment(sharing)
+                .tint(Theme.accent)
+                .fontDesign(.rounded)
+        }
+        .sheet(isPresented: $showShareStart) {
+            ShareStartView {
+                // Let the start sheet close before the space opens.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { showSharedSpace = true }
+            }
+            .environment(sharing)
+            .tint(Theme.accent)
+            .fontDesign(.rounded)
+        }
+        .sheet(isPresented: $showSharedSpace) {
+            SharedSpaceView()
+                .environment(sharing)
                 .tint(Theme.accent)
                 .fontDesign(.rounded)
         }
         .toolbar {
+            if SharingStore.isEnabled {
+                ToolbarItem(placement: .topBarTrailing) {
+                    SharedHeaderButton {
+                        if sharing.hasSpace { showSharedSpace = true } else { showShareStart = true }
+                    }
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button {
@@ -599,5 +649,6 @@ struct QuickAddBar: View {
 #Preview {
     ContentView()
         .environment(ProStore())
+        .environment(SharingStore())
         .modelContainer(for: [TaskItem.self, TaskStep.self], inMemory: true)
 }
