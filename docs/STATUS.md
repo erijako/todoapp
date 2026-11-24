@@ -52,14 +52,13 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Next 5 tasks (priority order)
 
-1. **Validate the business idea** with `/startup-design` (in a fresh session) and adjust the plan.
-2. **Gentle nudges** (Pro): local notifications that return until done or snoozed, kind-friend
-   voice; add to the paywall benefits.
-3. **Landing page + waitlist** on GitHub Pages in the brand style (also hosts privacy + support).
-4. **Bring the brand into the app**: warm stone on the welcome screen, glow color for the one next
-   thing, updated mockups.
-5. **Unit tests in CI**: FocusEngine order, rollover (carried over, done today), Later, Pro
-   entitlement mapping.
+1. **Sharing (v1.1, decided in DECISIONS.md):** mockups first (invite flow, "Shared" space with
+   members, send-a-reminder sheet, incoming reminder card with accept/snooze/decline, who-sent-it),
+   then a spec, then CloudKit implementation. Portal setup: iCloud container + Push Notifications.
+2. **Validate the business idea** with `/startup-design` and adjust the plan.
+3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
+4. **Landing page + waitlist** on GitHub Pages in the brand style.
+5. **Bring the brand into the app**, then **unit tests in CI**.
 
 ## Apple Developer account: approved 2026-11-24 (setup in progress)
 

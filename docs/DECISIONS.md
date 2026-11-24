@@ -119,9 +119,27 @@ Rejected: a checkmark icon (too generic); the path of stones, a plain glowing do
 **Privacy policy hosted on GitHub Pages** (`docs/privacy.html`), covering v1.0 only; to be updated
 before iCloud sync or Couples ships. Terms: Apple's standard EULA.
 
-## v1.1 Couples (planned)
+## v1.1 Sharing ("Couples", decided 2026-11-24)
 
-**Lean: CloudKit sharing** (Apple ID identity, no accounts, no server, no running costs).
-Shared data needs `CKSyncEngine` or Core Data, since SwiftData doesn't sync shared databases.
-Alternative kept open: own backend (Supabase etc.), needed only for cross-platform partners.
-Not decided yet.
+**Technology: iCloud sharing (CloudKit).** Invite via an Apple share link; identity is the Apple ID.
+No accounts, no server, no running costs; data stays in the users' iCloud. Both people need an
+iPhone with iCloud. SwiftData can't sync shared databases, so the shared space uses `CKSyncEngine`
+(or Core Data + `NSPersistentCloudKitContainer`); private lists stay on SwiftData.
+Rejected: own backend (Supabase etc.): accounts, costs, larger GDPR scope; only needed for Android/web.
+
+**Partner role: send gentle reminders.** A member adds a reminder for someone; it shows up as a
+gentle nudge (and can reach the lock screen widget). The receiver accepts, snoozes or declines and
+stays in control. Private lists stay private; no "they haven't done it yet" surveillance.
+Kind tone: "Alex added a reminder 💛", never "OVERDUE".
+Rejected: a shared list where everyone edits; doing both (about double the work).
+
+**Group size: a few people** (partner, roommates, family; cap around 5), not just one partner.
+Means: show who sent each reminder, per-sender display names, choose recipient when sending.
+Rejected: exactly one partner.
+
+**Pricing: free for now** (TestFlight and launch) to learn whether people use it; decide later
+(options: Couples/Family plan ~$49.99/yr, or part of Pro).
+
+Requires in the developer portal: iCloud (CloudKit) container `iCloud.com.erijako.onestep` on the
+app's App ID, Push Notifications (CloudKit's silent pushes), plus Background Modes → Remote
+notifications in the app. Privacy policy must be updated before this ships.
