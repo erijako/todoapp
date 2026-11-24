@@ -179,15 +179,20 @@ struct RectangularView: View {
                 .lineLimit(1)
                 .foregroundStyle(.secondary)
 
-                Button(intent: ToggleTaskIntent(taskID: next.taskID, stepID: next.stepID)) {
-                    HStack(alignment: .top, spacing: 4) {
+                // Only the circle checks it off; tapping anywhere else opens the app.
+                HStack(alignment: .center, spacing: 4) {
+                    Button(intent: ToggleTaskIntent(taskID: next.taskID, stepID: next.stepID)) {
                         Image(systemName: "circle")
-                        Text(next.headline)
-                            .lineLimit(2)
+                            .font(.title3)
+                            .frame(width: 30, height: 30)
+                            .contentShape(Circle())
                     }
-                    .font(.headline)
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text("Check off \(next.headline)"))
+                    Text(next.headline)
+                        .font(.headline)
+                        .lineLimit(2)
                 }
-                .buttonStyle(.plain)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {

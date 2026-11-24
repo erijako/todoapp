@@ -13,7 +13,7 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - "Just one thing" focus mode: done / not now / break it down
 - Pin as next; "Up next" card (tap for details, long-press menu)
 - Done today with dot counter and haptics
-- Lock screen + home screen widget "Up Next" with check-off from the lock screen
+- Lock screen + home screen widget "Up Next" with check-off from the lock screen (only the circle checks off; tapping elsewhere opens the app, fixed 2026-11-24 after accidental check-offs)
 - Focus timer (2 / 10 / 25 min, +5) with Live Activity and Dynamic Island, "time's up" notification
 - No-shame rollover: Later bucket, new-day card ("Park some"), Fresh start
 - Pro: StoreKit 2 store, paywall, Settings (restore, manage subscription); timer gated
