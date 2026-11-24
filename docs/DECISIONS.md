@@ -105,8 +105,8 @@ Rejected: showing the paywall after onboarding.
 
 **Name: Onestep.** Bundle `com.erijako.onestep`, App Group `group.com.erijako.onestep`, URL scheme
 `onestep://`. "OneStep" alone is taken on the App Store (weight loss, physical therapy apps), so the
-store name needs a suffix, e.g. "Onestep: ADHD To-Do".
-Rejected: Lockstep, Glance, Tiny Steps.
+store name is "Onestep: Gentle To-Do List" ("ADHD" kept out of the name so it never labels users; it goes in the hidden keywords).
+Rejected: Lockstep, Glance, Tiny Steps; store names with "ADHD" in them.
 
 **Brand: "the warm stone"** — a stepping stone with a warm peach light inside, on calm periwinkle
 water (dark version on night blue). Story: you don't cross the river at once; you find the next

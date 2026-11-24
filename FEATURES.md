@@ -3,7 +3,7 @@
 > **Positioning:** A to-do app built for ADHD brains.
 > **Pitch:** Out of sight, out of mind — so we put your next step where you look 100 times a day: your lock screen.
 
-Name: **Onestep** (bundle ID `com.erijako.onestep`). Bare "OneStep" is taken on the App Store, so the store name needs a suffix, e.g. "Onestep: ADHD To-Do". Brand: "the warm stone", a stepping stone with a warm light inside, kind-friend voice; icon in light + dark (`design/make_icon.py`), brand board on the design canvas.
+Name: **Onestep** (bundle ID `com.erijako.onestep`). Bare "OneStep" is taken on the App Store, so the store name is **"Onestep: Gentle To-Do List"** (no "ADHD" in the name; it goes in the hidden keywords instead). Brand: "the warm stone", a stepping stone with a warm light inside, kind-friend voice; icon in light + dark (`design/make_icon.py`), brand board on the design canvas.
 
 Platform: **iOS first** (native SwiftUI). Language: **English** by default, **Norwegian** later.
 
