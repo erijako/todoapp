@@ -8,9 +8,9 @@
 - [x] 0.5 Pre-Flight
 - [x] 1 Intake
 - [x] 2 Brainstorm
-- [ ] 2.5 Research depth
-- [ ] 3 Market research
-- [ ] 3.5 Research gate
+- [x] 2.5 Research depth (Standard)
+- [x] 3 Market research (sequential, ~13 searches)
+- [x] 3.5 Research gate: YELLOW (par grønn, kollektiv gul)
 - [ ] 3.7 Customer discovery
 - [ ] 4 Strategy
 - [ ] 5 Brand
