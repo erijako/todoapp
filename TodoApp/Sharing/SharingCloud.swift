@@ -200,7 +200,7 @@ struct SharingCloud {
 
     static func record(_ space: SharedSpace, zone: CKRecordZone.ID) -> CKRecord {
         let record = CKRecord(recordType: RecordType.space, recordID: CKRecord.ID(recordName: "space", zoneID: zone))
-        record["name"] = space.name
+        record["spaceName"] = space.name
         record["ownerID"] = space.ownerID
         return record
     }
@@ -228,7 +228,7 @@ struct SharingCloud {
     }
 
     static func space(from record: CKRecord) -> SharedSpace? {
-        guard let name = record["name"] as? String, let owner = record["ownerID"] as? String else { return nil }
+        guard let name = record["spaceName"] as? String, let owner = record["ownerID"] as? String else { return nil }
         return SharedSpace(name: name, ownerID: owner)
     }
 

@@ -60,7 +60,7 @@ Two worlds, on purpose:
 
 | Type | Fields | Written by |
 |---|---|---|
-| `Space` (one, record name `space`) | `name` String | owner |
+| `Space` (one, record name `space`) | `spaceName` String, `ownerID` String | owner |
 | `Member` (record name = member id) | `displayName` String, `colorIndex` Int64, `joinedAt` Date | each person writes their own |
 | `Reminder` (record name = UUID) | `title` String, `note` String, `senderID` String, `recipientID` String, `showAt` Date, `state` String (`sent`/`taken`/`passed`/`handedBack`), `createdAt` Date, `answeredAt` Date? | sender creates; recipient changes `state` |
 
@@ -123,7 +123,7 @@ reason), not at launch.
 4. **CloudKit schema** (TestFlight and the App Store use the Production environment, which never
    creates record types by itself). In CloudKit Console → `iCloud.com.erijako.onestep` →
    Development → Schema → Record Types, create:
-   - `Space`: `name` (String), `ownerID` (String)
+   - `Space`: `spaceName` (String), `ownerID` (String) — `name` is rejected by CloudKit
    - `Member`: `displayName` (String), `colorIndex` (Int(64)), `joinedAt` (Date/Time)
    - `Reminder`: `title`, `note`, `senderID`, `recipientID`, `state` (String);
      `showAt`, `createdAt`, `answeredAt` (Date/Time)
