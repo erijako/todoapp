@@ -330,6 +330,7 @@ struct TaskListView: View {
         .sensoryFeedback(trigger: doneToday.count) { old, new in
             new > old ? .success : nil
         }
+        .scrollDismissesKeyboard(.interactively)
         .safeAreaInset(edge: .bottom) {
             QuickAddBar(text: $newTitle, isThought: $newIsThought, onSubmit: add)
         }
@@ -621,8 +622,10 @@ struct QuickAddBar: View {
                 .focused($focused)
                 .submitLabel(.done)
                 .onSubmit {
+                    // Keep typing after adding something; an empty "done" puts the keyboard away.
+                    let hadText = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                     onSubmit()
-                    focused = true
+                    focused = hadText
                 }
                 .padding(.horizontal, 14)
                 .frame(height: 44)
@@ -642,6 +645,17 @@ struct QuickAddBar: View {
             }
         }
         .animation(.spring(duration: 0.25), value: text.isEmpty)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button {
+                    focused = false
+                } label: {
+                    Image(systemName: "keyboard.chevron.compact.down")
+                }
+                .accessibilityLabel(Text("Hide keyboard"))
+            }
+        }
         .padding(.horizontal, 16)
         .padding(.top, 12)
         .padding(.bottom, 8)
