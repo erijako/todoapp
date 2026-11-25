@@ -180,12 +180,12 @@ struct RectangularView: View {
                 .foregroundStyle(.secondary)
 
                 // Only the circle checks it off; tapping anywhere else opens the app.
-                HStack(alignment: .center, spacing: 4) {
+                HStack(alignment: .center, spacing: 2) {
                     Button(intent: ToggleTaskIntent(taskID: next.taskID, stepID: next.stepID)) {
                         Image(systemName: "circle")
-                            .font(.title3)
-                            .frame(width: 30, height: 30)
-                            .contentShape(Circle())
+                            .font(.headline)
+                            .frame(width: 28, height: 28)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(Text("Check off \(next.headline)"))

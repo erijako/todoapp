@@ -123,7 +123,7 @@ struct ShareJoinView: View {
                 dismiss()
                 onJoined()
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = SharingCloud.message(for: error)
             }
         }
     }

@@ -58,6 +58,7 @@ struct SharingCloud {
         let db = container.privateCloudDatabase
         let zoneResults = try await db.modifyRecordZones(saving: [zone], deleting: [])
         for (_, result) in zoneResults.saveResults { _ = try result.get() }
+        // Records and share in one batch so a half-made space never exists.
 
         let share = CKShare(recordZoneID: zone.zoneID)
         share[CKShare.SystemFieldKey.title] = space.name as CKRecordValue
@@ -138,7 +139,36 @@ struct SharingCloud {
     func save(_ records: [CKRecord], in db: CKDatabase) async throws {
         guard !records.isEmpty else { return }
         let results = try await db.modifyRecords(saving: records, deleting: [], savePolicy: .allKeys)
-        for (_, result) in results.saveResults { _ = try result.get() }
+        // In an atomic batch every record fails, but only one carries the real reason; the rest say
+        // "batch request failed". Throw the real one so the message means something.
+        var errors: [Error] = []
+        for (_, result) in results.saveResults {
+            if case .failure(let error) = result { errors.append(error) }
+        }
+        if let real = errors.first(where: { ($0 as? CKError)?.code != .batchRequestFailed }) ?? errors.first {
+            throw real
+        }
+    }
+
+    /// A kind, readable message for an iCloud error, with a short code for troubleshooting.
+    static func message(for error: Error) -> String {
+        if let cloud = error as? CloudError { return cloud.localizedDescription }
+        guard let ck = error as? CKError else { return error.localizedDescription }
+        let detail = ck.localizedDescription.lowercased()
+        let code = "CK\(ck.code.rawValue)"
+        switch ck.code {
+        case .notAuthenticated:
+            return CloudError.noAccount.localizedDescription
+        case .networkUnavailable, .networkFailure, .serviceUnavailable, .requestRateLimited, .zoneBusy:
+            return String(localized: "iCloud isn't answering right now. Check your connection and try again in a moment. (\(code))")
+        case .quotaExceeded:
+            return String(localized: "Your iCloud storage is full, so sharing can't save. (\(code))")
+        default:
+            if detail.contains("type") || ck.code == .serverRejectedRequest || ck.code == .invalidArguments {
+                return String(localized: "Sharing isn't set up in iCloud yet. The record types need to be deployed in CloudKit Console. (\(code))")
+            }
+            return String(localized: "Something went wrong with iCloud. Try again in a moment. (\(code))")
+        }
     }
 
     /// Silent pushes when anything in the space changes, so the app can refresh in the background.

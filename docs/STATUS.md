@@ -51,6 +51,10 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Known bugs and risks (unverified, found by reading the code)
 
+- **TestFlight build 10 (2026-11-25):** sharing and simulated Pro visible. "Invite someone" failed
+  with "Atomic failure" (likely CloudKit schema not deployed to Production); errors now show the
+  real cause. Fixed: cut-off recipient names, missing Later/Pass buttons, widget circle overlap.
+
 - **Design audit 2026-11-25** (`docs/design-audit-2026-11-25.md`, 15/20): 26 pt check buttons,
   details only via tap gestures (not VoiceOver-reachable), fixed button heights clip at large
   Dynamic Type, Reduce Motion ignored, a few raw colors in onboarding.

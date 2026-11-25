@@ -126,7 +126,7 @@ struct ShareStartView: View {
                                 dismiss()
                                 onCreated()
                             } catch {
-                                errorMessage = error.localizedDescription
+                                errorMessage = SharingCloud.message(for: error)
                             }
                         }
                     } label: {
@@ -456,7 +456,7 @@ extension SharedSpaceView {
                     Task { await sharing.refresh() }
                 }
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = SharingCloud.message(for: error)
             }
         }
     }
@@ -638,7 +638,8 @@ private struct FlowChips: View {
     @Binding var selected: Set<String>
 
     var body: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 8, alignment: .leading)], alignment: .leading, spacing: 8) {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 8) {
             ForEach(members) { member in
                 let on = selected.contains(member.id)
                 Button {
@@ -649,6 +650,7 @@ private struct FlowChips: View {
                         Text(member.displayName)
                             .font(.body.weight(.bold))
                             .lineLimit(1)
+                            .fixedSize()
                         if on {
                             Image(systemName: "checkmark")
                                 .font(.footnote.weight(.heavy))
@@ -664,6 +666,8 @@ private struct FlowChips: View {
                 .foregroundStyle(Theme.ink)
                 .accessibilityAddTraits(on ? .isSelected : [])
             }
+          }
+          .padding(.vertical, 2)
         }
     }
 }

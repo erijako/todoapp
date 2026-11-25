@@ -78,7 +78,6 @@ struct IncomingReminderCard: View {
                     }
                     .foregroundStyle(Theme.onAccent)
                     .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.control))
-                    .layoutPriority(1)
 
                     if !isHandedBack {
                         secondaryButton("Later") {
@@ -108,7 +107,10 @@ struct IncomingReminderCard: View {
         Button(action: action) {
             Text(title)
                 .font(.body.weight(.bold))
-                .frame(maxWidth: .infinity, minHeight: 48)
+                .lineLimit(1)
+                .fixedSize()
+                .padding(.horizontal, 16)
+                .frame(minHeight: 48)
         }
         .buttonStyle(.plain)
         .foregroundStyle(Theme.ink)
