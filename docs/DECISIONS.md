@@ -101,6 +101,13 @@ Rejected: showing the paywall after onboarding.
 
 **StoreKit 2, on-device verification, no server.**
 
+**Reverse trial: Pro free for the first 7 days (2026-11-25)**, from install, no card. After that a
+kind paywall; list, widget and basic sharing stay free forever. Pro = personal extras (focus timer,
+gentle nudges that come back, "break it down for me"); sharing stays free (model 1 of 3).
+Rejected: locking everything after 7 days + usage (would cut off partners/kollektiv who never paid,
+and breaks "no-shame core stays free"); starting the trial "after usage" (hard to define and explain);
+Home extras in Pro; a separate Couples/Family plan (for now). Context: `docs/startup/onestep-home/`.
+
 **"Simulate purchase" for testing (2026-11-24)**: a button on the paywall unlocks Pro without the
 App Store, so Pro features can be tested before the products exist in App Store Connect. Shown only
 in Debug builds and in non-production installs (TestFlight, Xcode, sandbox, via

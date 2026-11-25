@@ -13,7 +13,7 @@
 - [x] 3.5 Research gate: YELLOW (par grønn, kollektiv gul)
 - [~] 3.7 Customer discovery: DEFERRED by founder (interviews = experiment #1)
 - [x] 4 Strategy
-- [ ] 5 Brand
+- [x] 5 Brand (light: existing brand; mission choice pending)
 - [ ] 6 Product
 - [ ] 7 Financial
 - [ ] 8 Validation

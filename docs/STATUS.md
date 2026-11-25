@@ -67,6 +67,7 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
    when a reminder arrives, Take it / Tonight / Pass actions).
 2. **Validate the business idea** with `/startup-design` and adjust the plan.
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
+   Also: **reverse trial** (Pro free 7 days from install, then kind paywall; decided 2026-11-25).
 4. **Landing page + waitlist** on GitHub Pages in the brand style.
 5. **Bring the brand into the app**, then **unit tests in CI**.
 

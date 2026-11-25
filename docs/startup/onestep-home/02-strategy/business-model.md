@@ -16,6 +16,12 @@
   2. Home basis gratis; Home-ekstra i Pro (f.eks. gjentakende oppgaver/rotasjon, flere spaces).
   3. Couples/Family-plan (~$49.99/år) som dekker alle i Home (nevnt i DECISIONS.md).
 
+## Besluttet (founder, 2026-11-25)
+- **Modell 1:** Home/deling gratis; Pro = personlige ekstra (fokus-timer, milde påminnelser som kommer
+  tilbake, "bryt ned for meg").
+- **Omvendt prøveperiode:** alle får Pro gratis de første 7 dagene fra installasjon, uten kort; deretter
+  vennlig paywall. Liste, widget og grunnleggende deling er gratis for alltid.
+
 ## Enhetsøkonomi [Assumption — unvalidated]
 - CAC ≈ 0 (organisk); founders tid er den reelle kostnaden.
 - Netto per årsabonnent ≈ $29.7 (etter 15 %). Antatt levetid 1,5 år → LTV ≈ $45.
