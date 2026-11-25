@@ -1,6 +1,6 @@
 # Status
 
-Last updated: 2026-11-24. Update this file whenever something is finished.
+Last updated: 2026-11-25. Update this file whenever something is finished.
 
 Important caveat: **nothing has been tested on a real device yet** (first TestFlight build just uploaded). CI only proves the app
 compiles. Everything below "works" in the sense that it is built and compiles cleanly.
@@ -40,8 +40,8 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - **Privacy policy**: `[DEVELOPER NAME]`, `[CONTACT EMAIL]`, `[DATE]` placeholders; GitHub Pages
   not turned on (serves from `main`, so this branch must be merged first; a private repo needs a
   paid plan). `Legal.privacy` already points to https://erijako.github.io/todoapp/privacy.html.
-- **Brand not in the app yet**: screens and onboarding still use the plain Calm & Soft look; the warm
-  stone and glow color only exist in the icon and on the canvas.
+- **Redesign to Style D "System" chosen 2026-11-25, not built yet**: the app still uses Calm & Soft.
+  Mockups exist for list, focus, lock screen and sharing; onboarding has no Style D mockups yet.
 - **TestFlight**: account set up (App IDs, App Group, app record, API key, secrets, a device).
   **First build uploaded to TestFlight on 2026-11-24** (workflow run 7, built with Xcode 26).
   Next: install via TestFlight and test on a real iPhone. Building with the iOS 26 SDK gives
@@ -70,15 +70,16 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Next 5 tasks (priority order)
 
-1. **Sharing (v1.1):** step 2 (iCloud) written, **untested on devices**. Owner: create the CloudKit
-   schema in CloudKit Console and deploy it to Production (`docs/SHARING_SPEC.md`, setup step 4),
-   then test with two iPhones on TestFlight. Next code: step 3, notifications (local notification
+1. **Sharing (v1.1):** step 2 (iCloud) written, **untested on devices**. CloudKit schema deployed
+   to Production 2026-11-25 (Space, Member, Reminder; fields match `SharingCloud`). Owner: retry
+   "Invite someone" on TestFlight (the "Atomic failure" should be gone), then test with two iPhones. Next code: step 3, notifications (local notification
    when a reminder arrives, Take it / Tonight / Pass actions).
 2. **Validate the business idea** with `/startup-design` and adjust the plan.
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
    Also: **reverse trial** (Pro free 7 days from install, then kind paywall; decided 2026-11-25).
 4. **Landing page + waitlist** on GitHub Pages in the brand style.
-5. **Bring the brand into the app**, then **unit tests in CI**.
+5. **Build Style D**: onboarding mockups in Style D first, then code (Theme tokens, list, focus,
+   lock screen widget), then **unit tests in CI**.
 
 ## Apple Developer account: approved 2026-11-24 (setup in progress)
 

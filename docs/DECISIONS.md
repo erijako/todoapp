@@ -62,6 +62,16 @@ sizes; darker unchecked circle and peach text for contrast; the "Up next" task i
 the list; a long swipe never deletes; Done today shows a dot counter; Up next zooms into focus
 mode (iOS 18).
 
+**Redesign: Style D "System" chosen (2026-11-25).** The app will look as if it shipped with iOS,
+a calmer sibling of Reminders: grouped inset cards, SF Pro, one tint, Liquid Glass buttons over the
+content, light + dark from day one, a Clock-style timer ring in focus mode with round Not Now / Done
+buttons. Mockups: the "D · System" rows on the design canvas (list, focus, lock screen, sharing
+S1–S7). The brand lives in the tint, the warm-stone icon and the voice; the glow colour stays
+reserved for the one next thing. Replaces "Calm & Soft" once built.
+Rejected: A Lido (pool metaphor could feel themed), B Now playing (dark-first, too familiar),
+C Signpost (utilitarian, less cozy), E Activity (sporty, rings read as goals), F Sky (gradients and
+thin type risk contrast). Known risk: least memorable of the six, so icon, tint and copy must carry it.
+
 **Mockups use SF Pro Rounded** (Nunito only as a fallback for non-Apple viewers), matching the app.
 
 ## Features

@@ -34,7 +34,7 @@ from a partner) in v1.1. Lock screen widgets render monochrome/tinted by the sys
 ## Brand Commitments
 Name: Onestep (lowercase wordmark allowed). Voice: "kind friend" — short, warm, a little funny
 ("Not your problem right now."). Never red, never "overdue", never streaks or guilt.
-No medical claims ("built for ADHD brains"). Visual identity is open for redesign (2026-11-25).
+No medical claims ("built for ADHD brains"). Visual identity: Style D "System" (iOS-native, one tint, warm-stone icon), chosen 2026-11-25.
 
 ## Evidence on Hand
 No testimonials, users or metrics yet. Do not invent them.
