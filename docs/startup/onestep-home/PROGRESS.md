@@ -11,8 +11,8 @@
 - [x] 2.5 Research depth (Standard)
 - [x] 3 Market research (sequential, ~13 searches)
 - [x] 3.5 Research gate: YELLOW (par grønn, kollektiv gul)
-- [ ] 3.7 Customer discovery
-- [ ] 4 Strategy
+- [~] 3.7 Customer discovery: DEFERRED by founder (interviews = experiment #1)
+- [x] 4 Strategy
 - [ ] 5 Brand
 - [ ] 6 Product
 - [ ] 7 Financial
