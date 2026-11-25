@@ -16,7 +16,6 @@ struct TasksWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: TasksProvider()) { entry in
             TasksWidgetView(entry: entry)
-                .fontDesign(.rounded)
                 .containerBackground(Theme.paper, for: .widget)
                 .widgetURL(AppLink.focus)
         }
@@ -237,7 +236,7 @@ struct HomeScreenView: View {
                         .lineLimit(1)
                 }
                 Text(next.headline)
-                    .font(isMedium ? .title3.weight(.heavy) : .headline.weight(.heavy))
+                    .font(isMedium ? .title3.weight(.bold) : .headline.weight(.bold))
                     .foregroundStyle(Theme.ink)
                     .lineLimit(3)
 

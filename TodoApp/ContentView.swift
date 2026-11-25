@@ -29,16 +29,13 @@ struct ContentView: View {
                 }
             }
             .tint(Theme.accent)
-            .fontDesign(.rounded)
         }
         .tint(Theme.accent)
-        .fontDesign(.rounded)
         .fullScreenCover(isPresented: $showFocus) {
             FocusView(mode: mode)
                 .environment(pro)
                 .focusZoomTransition(focusZoom)
                 .tint(Theme.accent)
-                .fontDesign(.rounded)
         }
         .onChange(of: modeRaw) {
             WidgetCenter.shared.reloadAllTimelines()
@@ -338,7 +335,6 @@ struct TaskListView: View {
             TaskDetailView(task: task)
                 .environment(sharing)
                 .tint(Theme.accent)
-                .fontDesign(.rounded)
         }
         .sheet(isPresented: $showCarryOver) {
             CarryOverSheet(tasks: carriedOver) { parked in
@@ -349,14 +345,12 @@ struct TaskListView: View {
                 save()
             }
             .tint(Theme.accent)
-            .fontDesign(.rounded)
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
                 .environment(pro)
                 .environment(sharing)
                 .tint(Theme.accent)
-                .fontDesign(.rounded)
         }
         .sheet(isPresented: $showShareStart) {
             ShareStartView {
@@ -365,13 +359,11 @@ struct TaskListView: View {
             }
             .environment(sharing)
             .tint(Theme.accent)
-            .fontDesign(.rounded)
         }
         .sheet(isPresented: $showSharedSpace) {
             SharedSpaceView()
                 .environment(sharing)
                 .tint(Theme.accent)
-                .fontDesign(.rounded)
         }
         .toolbar {
             if sharing.isEnabled {
@@ -474,31 +466,32 @@ struct UpNextCard: View {
     var body: some View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 4) {
-                EyebrowText("Up next")
+                Text("Up next")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.accent)
                 Text(task.currentStep?.title ?? task.title)
-                    .font(.title3.weight(.bold))
+                    .font(.title3.weight(.semibold))
                     .foregroundStyle(Theme.ink)
                 if let number = task.currentStepNumber {
-                    Text("\(task.title) · step \(number) of \(task.stepCount)")
-                        .font(.footnote)
+                    Text("\(task.title) · \(number) of \(task.stepCount)")
+                        .font(.subheadline)
                         .foregroundStyle(Theme.inkSoft)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Button(action: onFocus) {
-                Label("Focus", systemImage: "scope")
-                    .font(.body.weight(.bold))
+                Text("Focus")
+                    .font(.body.weight(.semibold))
                     .padding(.horizontal, 18)
-                    .frame(height: 44)
-                    .background(Theme.accent, in: Capsule())
-                    .foregroundStyle(Theme.onAccent)
+                    .frame(minHeight: 44)
+                    .background(Theme.segment, in: Capsule())
+                    .foregroundStyle(Theme.accent)
             }
             .buttonStyle(.plain)
         }
-        .padding(18)
+        .padding(16)
         .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-        .shadow(color: Theme.ink.opacity(0.06), radius: 12, y: 6)
     }
 }
 
@@ -604,16 +597,15 @@ struct QuickAddBar: View {
     @FocusState private var focused: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 4) {
             Button {
                 isThought.toggle()
             } label: {
-                Image(systemName: isThought ? "lightbulb.fill" : "checklist")
-                    .font(.body.weight(.semibold))
+                Image(systemName: isThought ? "lightbulb.fill" : "plus.circle.fill")
+                    .font(.title3)
                     .foregroundStyle(isThought ? Theme.peachInk : Theme.accent)
                     .frame(width: 44, height: 44)
-                    .background(isThought ? Theme.peach : Theme.paper,
-                                in: RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous))
+                    .contentShape(Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel(isThought ? Text("Adding a thought") : Text("Adding a task"))
@@ -627,9 +619,7 @@ struct QuickAddBar: View {
                     onSubmit()
                     focused = hadText
                 }
-                .padding(.horizontal, 14)
-                .frame(height: 44)
-                .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous))
+                .frame(minHeight: 44)
 
             if !text.isEmpty {
                 Button(action: onSubmit) {
@@ -656,13 +646,13 @@ struct QuickAddBar: View {
                 .accessibilityLabel(Text("Hide keyboard"))
             }
         }
+        .padding(.leading, 4)
+        .padding(.trailing, 4)
+        .padding(.vertical, 3)
+        .glassCapsule()
         .padding(.horizontal, 16)
-        .padding(.top, 12)
+        .padding(.top, 8)
         .padding(.bottom, 8)
-        .background(Theme.fog.opacity(0.95))
-        .overlay(alignment: .top) {
-            Theme.segment.frame(height: 1)
-        }
     }
 }
 

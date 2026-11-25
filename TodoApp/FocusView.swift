@@ -58,40 +58,43 @@ struct FocusView: View {
         .sheet(item: $breakdownTask) { task in
             TaskDetailView(task: task)
                 .tint(Theme.accent)
-                .fontDesign(.rounded)
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
                 .environment(pro)
                 .tint(Theme.accent)
-                .fontDesign(.rounded)
         }
     }
 
     // MARK: Header
 
     private var header: some View {
-        HStack {
-            Label { Text(mode.title) } icon: { Image(systemName: mode.symbol) }
-                .font(.footnote.weight(.bold))
-                .foregroundStyle(Theme.inkSoft)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Theme.paper, in: Capsule())
+        ZStack {
+            Text("Focus")
+                .font(.headline)
+                .accessibilityAddTraits(.isHeader)
 
-            Spacer()
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(Theme.ink)
+                        .frame(width: 44, height: 44)
+                        .background(Theme.segment, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Close"))
 
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.body.weight(.bold))
+                Spacer()
+
+                Label { Text(mode.title) } icon: { Image(systemName: mode.symbol) }
+                    .labelStyle(.iconOnly)
+                    .font(.body)
                     .foregroundStyle(Theme.inkSoft)
                     .frame(width: 44, height: 44)
-                    .background(Theme.paper, in: Circle())
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(Text("Close"))
         }
     }
 
@@ -100,20 +103,21 @@ struct FocusView: View {
     private func focusContent(_ task: TaskItem) -> some View {
         VStack(spacing: 10) {
             if let step = task.currentStep, let number = task.currentStepNumber {
-                EyebrowText(verbatim: Text("Step \(number) of \(task.stepCount)"))
-                Text(step.title)
-                    .font(.largeTitle.weight(.heavy))
-                    .multilineTextAlignment(.center)
-                Text(task.title)
-                    .font(.title3)
+                Text("\(task.title) · Step \(number) of \(task.stepCount)")
+                    .font(.subheadline)
                     .foregroundStyle(Theme.inkSoft)
+                    .multilineTextAlignment(.center)
+                Text(step.title)
+                    .font(.title.weight(.bold))
                     .multilineTextAlignment(.center)
                 StepDots(total: task.stepCount, done: task.doneStepCount)
                     .padding(.top, 6)
             } else {
-                EyebrowText("Just this one thing")
+                Text("Just this one thing")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.inkSoft)
                 Text(task.title)
-                    .font(.largeTitle.weight(.heavy))
+                    .font(.title.weight(.bold))
                     .multilineTextAlignment(.center)
             }
         }
@@ -125,32 +129,32 @@ struct FocusView: View {
     }
 
     private func actions(_ task: TaskItem) -> some View {
-        VStack(spacing: 12) {
-            Button {
-                complete(task)
-            } label: {
-                Label(task.currentStep == nil ? "Done" : "Step done", systemImage: "checkmark")
-                    .font(.title3.weight(.heavy))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 58)
-                    .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.primaryButton, style: .continuous))
-                    .foregroundStyle(Theme.onAccent)
-                    .shadow(color: Theme.accent.opacity(0.25), radius: 10, y: 8)
-            }
-            .buttonStyle(.plain)
-
-            HStack(spacing: 12) {
-                SoftButton(title: "Not now") { skip(task) }
-                SoftButton(title: "Break it down") { breakdownTask = task }
-            }
-
+        VStack(spacing: 16) {
             if remaining > 1 {
                 Text("\(remaining - 1) more waiting. Not your problem right now.")
                     .font(.body)
                     .foregroundStyle(Theme.inkSoft)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 4)
             }
+
+            // Clock-app style: round Not Now (left) and Done (right).
+            HStack(alignment: .center) {
+                RoundActionButton(title: "Not now", fill: Theme.track, ink: Theme.ink) { skip(task) }
+
+                Spacer(minLength: 8)
+
+                Button("Break it down") { breakdownTask = task }
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(Theme.accent)
+                    .frame(minHeight: 44)
+                    .multilineTextAlignment(.center)
+
+                Spacer(minLength: 8)
+
+                RoundActionButton(title: "Done", fill: Theme.accent, ink: Theme.onAccent) { complete(task) }
+                    .accessibilityLabel(Text(task.currentStep == nil ? "Done" : "Step done"))
+            }
+            .padding(.horizontal, 4)
         }
     }
 
@@ -160,7 +164,7 @@ struct FocusView: View {
                 .font(.system(size: 56))
                 .foregroundStyle(Theme.peachInk)
             Text("All clear")
-                .font(.largeTitle.weight(.heavy))
+                .font(.largeTitle.weight(.bold))
             Text("Nothing left here. Go do something fun.")
                 .foregroundStyle(Theme.inkSoft)
                 .multilineTextAlignment(.center)
@@ -189,7 +193,7 @@ struct FocusView: View {
                             .font(.body.weight(.bold))
                             .padding(.horizontal, 16)
                             .frame(height: 44)
-                            .background(Theme.paper, in: Capsule())
+                            .background(Theme.segment, in: Capsule())
                     }
                     .buttonStyle(.plain)
 
@@ -213,7 +217,7 @@ struct FocusView: View {
                         .foregroundStyle(Theme.inkSoft)
                     if !pro.isPro {
                         Text("Pro")
-                            .font(.footnote.weight(.heavy))
+                            .font(.footnote.weight(.bold))
                             .textCase(.uppercase)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 2)
@@ -250,7 +254,7 @@ struct FocusView: View {
                 .font(.body.weight(.bold))
                 .padding(.horizontal, 14)
                 .frame(height: 44)
-                .background(Theme.paper, in: Capsule())
+                .background(Theme.segment, in: Capsule())
         }
         .buttonStyle(.plain)
     }
@@ -277,7 +281,33 @@ struct FocusView: View {
     }
 }
 
-/// White, rounded secondary button.
+/// Big round button with a thin outer ring, like the Clock app's Start / Cancel.
+struct RoundActionButton: View {
+    let title: LocalizedStringKey
+    let fill: Color
+    let ink: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.body.weight(.semibold))
+                .lineLimit(2)
+                .minimumScaleFactor(0.6)
+                .multilineTextAlignment(.center)
+                .padding(8)
+                .frame(width: 84, height: 84)
+                .background(fill, in: Circle())
+                .padding(3)
+                .overlay(Circle().strokeBorder(fill, lineWidth: 2))
+                .foregroundStyle(ink)
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Secondary button on a card-colored pill.
 struct SoftButton: View {
     let title: LocalizedStringKey
     let action: () -> Void
@@ -288,7 +318,7 @@ struct SoftButton: View {
                 .font(.body.weight(.bold))
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(Theme.paper, in: RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+                .background(Theme.segment, in: Capsule())
                 .foregroundStyle(Theme.ink)
         }
         .buttonStyle(.plain)
@@ -315,6 +345,7 @@ struct StepDots: View {
 
 /// A ring that empties as time runs out. Seeing time pass helps with time blindness.
 struct TimerRing: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let fraction: Double
     let secondsLeft: TimeInterval
     let totalMinutes: Int
@@ -322,20 +353,20 @@ struct TimerRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Theme.paper)
-            Circle()
-                .stroke(Theme.track, lineWidth: 12)
-                .padding(6)
+                .stroke(Theme.track, lineWidth: 9)
+                .padding(5)
             Circle()
                 .trim(from: 0, to: fraction)
-                .stroke(Theme.accent, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                .stroke(Theme.accent, style: StrokeStyle(lineWidth: 9, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .padding(6)
-                .animation(.linear(duration: 1), value: fraction)
+                .padding(5)
+                .animation(reduceMotion ? nil : .linear(duration: 1), value: fraction)
             if secondsLeft > 0 {
                 VStack(spacing: 2) {
                     Text(Duration.seconds(secondsLeft).formatted(.time(pattern: .minuteSecond)))
-                        .font(.largeTitle.weight(.heavy).monospacedDigit())
+                        .font(.system(size: 64, weight: .light).monospacedDigit())
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
                         .contentTransition(.numericText(countsDown: true))
                     Text("of \(totalMinutes) min")
                         .font(.footnote)
@@ -351,7 +382,7 @@ struct TimerRing: View {
                 }
             }
         }
-        .frame(width: 168, height: 168)
+        .frame(width: 240, height: 240)
         .accessibilityElement(children: .combine)
     }
 }

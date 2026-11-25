@@ -139,7 +139,7 @@ struct CarryOverSheet: View {
                             Text("Park \(selected.count) in Later")
                         }
                     }
-                    .font(.body.weight(.heavy))
+                    .font(.body.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
                     .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.primaryButton, style: .continuous))

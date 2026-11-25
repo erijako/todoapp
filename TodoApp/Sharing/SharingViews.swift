@@ -92,7 +92,7 @@ struct ShareStartView: View {
                         }
                         .accessibilityHidden(true)
                         Text("Bring your people in")
-                            .font(.largeTitle.weight(.heavy))
+                            .font(.largeTitle.weight(.bold))
                             .multilineTextAlignment(.center)
                         Text("Partner, roommates, family. They can send you a gentle reminder, and you can send them one.")
                             .foregroundStyle(Theme.inkSoft)
@@ -137,7 +137,7 @@ struct ShareStartView: View {
                                 Label("Invite someone", systemImage: "square.and.arrow.up")
                             }
                         }
-                        .font(.body.weight(.heavy))
+                        .font(.body.weight(.bold))
                         .frame(maxWidth: .infinity, minHeight: 56)
                     }
                     .buttonStyle(.plain)
@@ -289,7 +289,7 @@ struct SharedSpaceView: View {
 
                     Button { showSend = true } label: {
                         Label("Send a reminder", systemImage: "heart")
-                            .font(.body.weight(.heavy))
+                            .font(.body.weight(.bold))
                             .frame(maxWidth: .infinity, minHeight: 56)
                     }
                     .buttonStyle(.plain)
@@ -390,7 +390,6 @@ struct SharedSpaceView: View {
             .sheet(isPresented: $showSend) {
                 SendReminderView()
                     .tint(Theme.accent)
-                    .fontDesign(.rounded)
             }
             .alert(Text("Rename space"), isPresented: $renaming) {
                 TextField("Name", text: $draft)
@@ -597,7 +596,7 @@ struct SendReminderView: View {
                         } icon: {
                             Image(systemName: "heart")
                         }
-                        .font(.body.weight(.heavy))
+                        .font(.body.weight(.bold))
                         .frame(maxWidth: .infinity, minHeight: 56)
                     }
                     .buttonStyle(.plain)
@@ -653,7 +652,7 @@ private struct FlowChips: View {
                             .fixedSize()
                         if on {
                             Image(systemName: "checkmark")
-                                .font(.footnote.weight(.heavy))
+                                .font(.footnote.weight(.bold))
                         }
                     }
                     .padding(.leading, 6)

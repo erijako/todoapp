@@ -105,7 +105,7 @@ struct PaywallView: View {
 
             EyebrowText("Pro")
             Text("Make time visible")
-                .font(.largeTitle.weight(.heavy))
+                .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)
             Text("A gentle timer you can see, right where you look, so time stops sneaking away.")
                 .font(.body)
@@ -171,7 +171,7 @@ struct PaywallView: View {
                         ctaTitle
                     }
                 }
-                .font(.title3.weight(.heavy))
+                .font(.title3.weight(.bold))
                 .frame(maxWidth: .infinity)
                 .frame(height: 58)
                 .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.primaryButton, style: .continuous))
@@ -251,7 +251,7 @@ struct PaywallView: View {
                 .font(.system(size: 56))
                 .foregroundStyle(Theme.peachInk)
             Text("Welcome to Pro")
-                .font(.largeTitle.weight(.heavy))
+                .font(.largeTitle.weight(.bold))
             Text("Thank you. Your focus timer is ready whenever you are.")
                 .foregroundStyle(Theme.inkSoft)
                 .multilineTextAlignment(.center)
@@ -346,10 +346,10 @@ private struct PlanCard: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 8) {
                         Text(name)
-                            .font(.body.weight(.heavy))
+                            .font(.body.weight(.bold))
                         if hasTrial, let offer = product.subscription?.introductoryOffer {
                             Text("\(offer.period.trialLength) free")
-                                .font(.footnote.weight(.heavy))
+                                .font(.footnote.weight(.bold))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(Theme.peach, in: Capsule())
@@ -366,7 +366,7 @@ private struct PlanCard: View {
 
                 VStack(alignment: .trailing, spacing: 1) {
                     Text(product.displayPrice)
-                        .font(.body.weight(.heavy))
+                        .font(.body.weight(.bold))
                     periodLabel
                         .font(.footnote)
                         .foregroundStyle(Theme.inkSoft)

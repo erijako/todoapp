@@ -167,7 +167,6 @@ struct SettingsView: View {
                 PaywallView()
                     .environment(store)
                     .tint(Theme.accent)
-                    .fontDesign(.rounded)
             }
             .manageSubscriptionsSheet(isPresented: $showManage)
             .alert(Text("Restore purchases"), isPresented: Binding(

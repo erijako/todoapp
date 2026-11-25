@@ -61,10 +61,13 @@ There are **no unit tests yet** (see STATUS). Regenerate the icon with `python3 
 
 ## Code conventions
 
+- **Style D "System"**: the app should look as if it shipped with iOS (grouped inset lists, SF Pro,
+  one indigo tint, Liquid Glass floating controls via `.glassCapsule()`). No `.fontDesign(.rounded)`,
+  no heavy weights (bold for titles, semibold for buttons).
 - **Colors, radii and type only from `Shared/Theme.swift`.** Every color has light + dark values.
-  Shapes: `Theme.Radius.card` (24), `Theme.Radius.control` (16), or `Capsule()`. Type sizes:
-  `.largeTitle`, `.title3`, `.body`, `.footnote` (+ `EyebrowText` for small uppercase labels).
-  App views use `.fontDesign(.rounded)`.
+  Shapes: `Theme.Radius.card` (22), `Theme.Radius.control` (14), `Capsule()` or `Circle()`. Type:
+  system text styles (`.largeTitle`, `.title`, `.title3`, `.headline`, `.body`, `.subheadline`,
+  `.footnote`); `EyebrowText` / `SectionLabel` for section headers.
 - **Never red, never "overdue", never streaks or guilt.** Unfinished tasks just stay.
 - **Voice: "kind friend"**: short, warm, a little funny. "Not your problem right now."
   Never medical claims: "built for ADHD brains", not "treats ADHD".

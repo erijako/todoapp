@@ -74,7 +74,7 @@ struct OnboardingView: View {
             VStack(spacing: 10) {
                 EyebrowText("Built for ADHD brains")
                 Text("Out of sight,\nout of mind?")
-                    .font(.largeTitle.weight(.heavy))
+                    .font(.largeTitle.weight(.bold))
                     .multilineTextAlignment(.center)
                 Text("Same. So we put your next step where you look 100 times a day: your lock screen.")
                     .foregroundStyle(Theme.inkSoft)
@@ -98,7 +98,7 @@ struct OnboardingView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("What's buzzing in your head?")
-                    .font(.title3.weight(.heavy))
+                    .font(.title3.weight(.bold))
                 Text("Dump a few things. Big, small, messy. You can sort it later, or never.")
                     .foregroundStyle(Theme.inkSoft)
             }
@@ -195,7 +195,7 @@ struct OnboardingView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Which one first?")
-                    .font(.title3.weight(.heavy))
+                    .font(.title3.weight(.bold))
                 Text("Just one. The rest will wait quietly until it's their turn.")
                     .foregroundStyle(Theme.inkSoft)
             }
@@ -220,10 +220,10 @@ struct OnboardingView: View {
 
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "list.bullet.indent")
-                    .foregroundStyle(Color(light: 0x3F7F6B, dark: 0x9FD3BF))
+                    .foregroundStyle(Theme.gotIt)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Feels too big?")
-                        .font(.body.weight(.heavy))
+                        .font(.body.weight(.bold))
                     Text("Break it into tiny steps later. \u{201C}Clean the kitchen\u{201D} becomes \u{201C}Put 5 things in the dishwasher\u{201D}.")
                         .font(.footnote)
                         .foregroundStyle(Theme.inkSoft)
@@ -248,7 +248,7 @@ struct OnboardingView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(widgetFound ? "Found it" : "Put it where you'll see it")
-                    .font(.title3.weight(.heavy))
+                    .font(.title3.weight(.bold))
                 Text(widgetFound
                      ? "Your next step is on your lock screen now. Check it off right there, no need to open the app."
                      : "Add the widget to your lock screen. You can check things off right there.")
@@ -263,13 +263,13 @@ struct OnboardingView: View {
             if widgetFound {
                 HStack(spacing: 14) {
                     Image(systemName: "checkmark")
-                        .font(.body.weight(.heavy))
-                        .foregroundStyle(.white)
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(Theme.onAccent)
                         .frame(width: 44, height: 44)
-                        .background(Color(hex: 0x3F7F6B), in: Circle())
+                        .background(Theme.accent, in: Circle())
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Widget is on")
-                            .font(.body.weight(.heavy))
+                            .font(.body.weight(.bold))
                         Text("If it ever goes missing, you'll find this guide in Settings.")
                             .font(.footnote)
                             .foregroundStyle(Theme.inkSoft)
@@ -314,7 +314,7 @@ struct OnboardingView: View {
                     .font(.system(size: 52))
                     .foregroundStyle(Theme.peachInk)
                 Text("You're set")
-                    .font(.largeTitle.weight(.heavy))
+                    .font(.largeTitle.weight(.bold))
                 Text(picked == nil
                      ? "Whenever something pops into your head, drop it here. We'll keep it to one thing at a time."
                      : "One thing at a time. That's the whole trick.")
@@ -357,7 +357,7 @@ struct OnboardingView: View {
                     TipRow(symbol: "lightbulb", tint: Theme.peachInk,
                            text: "Not a task? Tap the bulb and save it as a **thought**.")
                     Divider().overlay(Theme.separator)
-                    TipRow(symbol: "leaf", tint: Color(light: 0x3F7F6B, dark: 0x9FD3BF),
+                    TipRow(symbol: "leaf", tint: Theme.gotIt,
                            text: "Rough day? **Fresh start** in the menu clears the deck. Nothing gets deleted.")
                 }
                 .padding(.horizontal, 16)
@@ -466,7 +466,7 @@ private struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.title3.weight(.heavy))
+                .font(.title3.weight(.bold))
                 .frame(maxWidth: .infinity)
                 .frame(height: 58)
                 .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.primaryButton, style: .continuous))
@@ -502,7 +502,7 @@ private struct LockScreenPreview: View {
                     Image(systemName: "circle")
                     Text(title).lineLimit(2)
                 }
-                .font(.body.weight(.heavy))
+                .font(.body.weight(.bold))
                 .foregroundStyle(.white)
             }
             .padding(12)
@@ -520,7 +520,7 @@ private struct LockScreenPreview: View {
         .padding(.vertical, compact ? 16 : 32)
         .frame(maxWidth: compact ? .infinity : 240)
         .background(
-            LinearGradient(colors: [Color(hex: 0x2B3050), Theme.Live.background], startPoint: .topLeading, endPoint: .bottomTrailing),
+            LinearGradient(colors: Theme.Live.wallpaper, startPoint: .topLeading, endPoint: .bottomTrailing),
             in: RoundedRectangle(cornerRadius: compact ? Theme.Radius.card : 40, style: .continuous)
         )
         .shadow(color: Theme.ink.opacity(compact ? 0 : 0.22), radius: 24, y: 12)
@@ -547,7 +547,7 @@ struct WidgetSteps: View {
     private func row(_ number: Int, _ text: LocalizedStringKey) -> some View {
         HStack(spacing: 12) {
             Text("\(number)")
-                .font(.body.weight(.heavy))
+                .font(.body.weight(.bold))
                 .foregroundStyle(Theme.accent)
                 .frame(width: 28, height: 28)
                 .background(Theme.currentRow, in: Circle())

@@ -40,8 +40,12 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 - **Privacy policy**: `[DEVELOPER NAME]`, `[CONTACT EMAIL]`, `[DATE]` placeholders; GitHub Pages
   not turned on (serves from `main`, so this branch must be merged first; a private repo needs a
   paid plan). `Legal.privacy` already points to https://erijako.github.io/todoapp/privacy.html.
-- **Redesign to Style D "System" chosen 2026-11-25, not built yet**: the app still uses Calm & Soft.
-  Mockups exist for list, focus, lock screen and sharing; onboarding has no Style D mockups yet.
+- **Style D "System" rolled out 2026-11-25 (compiles, not seen on a device)**: new tokens in
+  `Theme` (iOS grouped greys, indigo tint, SF Pro), focus mode with a Clock-style ring and round
+  Not now / Done buttons, Up next card without shadow, floating glass quick-add bar (Liquid Glass on
+  iOS 26), raw onboarding colors moved to tokens. Every other screen follows through the tokens and
+  still has its old layout (task detail, paywall, settings, sharing). Strings are still sentence
+  case; mockups use Title Case.
 - **TestFlight**: account set up (App IDs, App Group, app record, API key, secrets, a device).
   **First build uploaded to TestFlight on 2026-11-24** (workflow run 7, built with Xcode 26).
   Next: install via TestFlight and test on a real iPhone. Building with the iOS 26 SDK gives
@@ -78,8 +82,8 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 3. **Gentle nudges** (Pro): local notifications that return until done or snoozed.
    Also: **reverse trial** (Pro free 7 days from install, then kind paywall; decided 2026-11-25).
 4. **Landing page + waitlist** on GitHub Pages in the brand style.
-5. **Build Style D**: onboarding mockups in Style D first, then code (Theme tokens, list, focus,
-   lock screen widget), then **unit tests in CI**.
+5. **Check Style D on a device** (dark mode, large text, Liquid Glass bar), then polish the screens
+   that only got new tokens; then **unit tests in CI**.
 
 ## Apple Developer account: approved 2026-11-24 (setup in progress)
 

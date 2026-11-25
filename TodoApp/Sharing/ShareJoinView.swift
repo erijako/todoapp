@@ -45,7 +45,7 @@ struct ShareJoinView: View {
                         }
                     EyebrowText("You're invited")
                     Text("\(inviter) wants you in \(spaceName)")
-                        .font(.largeTitle.weight(.heavy))
+                        .font(.largeTitle.weight(.bold))
                         .multilineTextAlignment(.center)
                     Text("So you can toss each other the odd gentle reminder. Milk, bins, calling grandma.")
                         .foregroundStyle(Theme.inkSoft)
@@ -84,7 +84,7 @@ struct ShareJoinView: View {
                                 Text("Join \(spaceName)")
                             }
                         }
-                        .font(.body.weight(.heavy))
+                        .font(.body.weight(.bold))
                         .frame(maxWidth: .infinity, minHeight: 56)
                     }
                     .buttonStyle(.plain)
@@ -146,7 +146,6 @@ struct ShareInviteCover: ViewModifier {
                 ShareJoinView(metadata: metadata, onJoined: onJoined)
                     .environment(sharing)
                     .tint(Theme.accent)
-                    .fontDesign(.rounded)
             }
         }
     }

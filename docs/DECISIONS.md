@@ -67,7 +67,10 @@ a calmer sibling of Reminders: grouped inset cards, SF Pro, one tint, Liquid Gla
 content, light + dark from day one, a Clock-style timer ring in focus mode with round Not Now / Done
 buttons. Mockups: the "D · System" rows on the design canvas (list, focus, lock screen, sharing
 S1–S7). The brand lives in the tint, the warm-stone icon and the voice; the glow colour stays
-reserved for the one next thing. Replaces "Calm & Soft" once built.
+reserved for the one next thing. Replaced "Calm & Soft" in code the same day. Tokens: grounds
+#F2F2F7 / #FFFFFF (dark #000 / #1C1C1E), ink black / white, secondary #6C6C70 / #AEAEB2, tint
+indigo #5856D6 (dark #8A88FF with dark text on it for 4.5:1), radii 22 / 14 / capsule.
+Kept from Calm & Soft: peach for thoughts and the Pro badge (the brand's warm glow).
 Rejected: A Lido (pool metaphor could feel themed), B Now playing (dark-first, too familiar),
 C Signpost (utilitarian, less cozy), E Activity (sporty, rings read as goals), F Sky (gradients and
 thin type risk contrast). Known risk: least memorable of the six, so icon, tint and copy must carry it.

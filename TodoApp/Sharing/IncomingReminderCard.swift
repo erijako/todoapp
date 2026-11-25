@@ -39,7 +39,7 @@ struct IncomingReminderCard: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(reminder.title)
-                    .font(.title3.weight(.heavy))
+                    .font(.title3.weight(.bold))
                 if !reminder.note.isEmpty {
                     Text(verbatim: "“\(reminder.note)”")
                         .foregroundStyle(Theme.inkSoft)
@@ -73,7 +73,7 @@ struct IncomingReminderCard: View {
                         withAnimation { sharing.take(reminder, in: context) }
                     } label: {
                         Label("Take it", systemImage: "plus")
-                            .font(.body.weight(.heavy))
+                            .font(.body.weight(.bold))
                             .frame(maxWidth: .infinity, minHeight: 48)
                     }
                     .foregroundStyle(Theme.onAccent)
@@ -183,7 +183,7 @@ struct ReminderFromSection: View {
                                  ?? SpaceMember(id: "", displayName: name, colorIndex: 0), size: 44)
                     VStack(alignment: .leading, spacing: 1) {
                         HStack(spacing: 5) {
-                            Text("From \(name)").font(.body.weight(.heavy))
+                            Text("From \(name)").font(.body.weight(.bold))
                             Image(systemName: "heart.fill")
                                 .font(.footnote)
                                 .foregroundStyle(Theme.heart)

@@ -142,7 +142,7 @@ struct StepRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if isCurrent {
                     Text("Now")
-                        .font(.footnote.weight(.heavy))
+                        .font(.footnote.weight(.bold))
                         .textCase(.uppercase)
                         .foregroundStyle(Theme.accent)
                 }

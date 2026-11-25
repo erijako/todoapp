@@ -1,26 +1,27 @@
 import SwiftUI
 import UIKit
 
-/// "Calm & Soft" design tokens. One place for every color, so light and dark mode stay consistent.
-/// Mockups: see the design canvas linked in FEATURES.md.
+/// Style D "System" design tokens: looks as if it shipped with iOS, next to Reminders.
+/// One place for every color, so light and dark mode stay consistent.
+/// Mockups: the "D · System" rows on the design canvas (see CLAUDE.md).
 enum Theme {
-    // Grounds and surfaces
-    static let fog = Color(light: 0xF4F5F8, dark: 0x14161F)          // app background
-    static let paper = Color(light: 0xFFFFFF, dark: 0x1E2130)        // cards, rows
-    static let focusGround = Color(light: 0xEEF0FA, dark: 0x181B28)  // focus mode background
-    static let segment = Color(light: 0xE7E9F0, dark: 0x262A3B)
-    static let separator = Color(light: 0xEEF0F4, dark: 0x2A2E40)
+    // Grounds and surfaces (iOS grouped style: grey ground, white cards; black + dark grey at night)
+    static let fog = Color(light: 0xF2F2F7, dark: 0x000000)          // app background
+    static let paper = Color(light: 0xFFFFFF, dark: 0x1C1C1E)        // cards, rows
+    static let focusGround = Color(light: 0xFFFFFF, dark: 0x000000)  // focus mode background
+    static let segment = Color(light: 0xE3E3E8, dark: 0x2C2C2E)      // pills on paper, chips
+    static let separator = Color(light: 0xC6C6C8, dark: 0x38383A)
 
     // Text
-    static let ink = Color(light: 0x1E2233, dark: 0xECEEF6)
-    static let inkSoft = Color(light: 0x5B6178, dark: 0xA3A8BD)
+    static let ink = Color(light: 0x000000, dark: 0xFFFFFF)
+    static let inkSoft = Color(light: 0x6C6C70, dark: 0xAEAEB2)      // 4.5:1 on fog and paper
 
-    // Accent (periwinkle) and its companions
-    static let accent = Color(light: 0x4F5FCC, dark: 0x9AA5F2)
-    static let onAccent = Color(light: 0xFFFFFF, dark: 0x141622)
-    static let track = Color(light: 0xDDE0F2, dark: 0x2C3150)
-    static let currentRow = Color(light: 0xF3F4FC, dark: 0x252A42)
-    static let checkStroke = Color(light: 0x878CA0, dark: 0x6A7090)  // 3:1 against paper
+    // Tint (indigo, the one accent) and its companions
+    static let accent = Color(light: 0x5856D6, dark: 0x8A88FF)
+    static let onAccent = Color(light: 0xFFFFFF, dark: 0x0B0B1A)     // 4.5:1 on accent
+    static let track = Color(light: 0xE5E5EA, dark: 0x2C2C2E)
+    static let currentRow = Color(light: 0xEEEEFB, dark: 0x24243A)
+    static let checkStroke = Color(light: 0x8E8E93, dark: 0x8E8E93)  // 3:1 against paper
 
     // Thoughts (peach), Personal (sage), pin
     static let peach = Color(light: 0xFCEDE2, dark: 0x3A2C24)
@@ -31,10 +32,12 @@ enum Theme {
 
     // Live Activity (always on a dark, translucent background)
     enum Live {
-        static let background = Color(hex: 0x141622)
-        static let accent = Color(hex: 0x9AA5F2)
-        static let label = Color(hex: 0xC9CEF5)
-        static let onAccent = Color(hex: 0x141622)
+        static let background = Color(hex: 0x1C1C1E)
+        static let accent = Color(hex: 0xA9A7FF)
+        static let label = Color(hex: 0xC7C7CC)
+        static let onAccent = Color(hex: 0x0B0B1A)
+        /// Indigo wallpaper used behind lock screen previews (onboarding).
+        static let wallpaper = [Color(hex: 0x6E6BD8), Color(hex: 0x2A2966)]
     }
 
     // Shared-space avatars: soft fill + readable initial (4.5:1), assigned in join order.
@@ -62,9 +65,9 @@ enum Theme {
     static let heart = Color(light: 0xE09068, dark: 0xE9A57C)
 
     enum Radius {
-        // Three shapes only: cards (24), controls (16), and pills (Capsule).
-        static let card: CGFloat = 24
-        static let control: CGFloat = 16
+        // Three shapes only: cards (22), controls (14), and pills/circles (Capsule, Circle).
+        static let card: CGFloat = 22
+        static let control: CGFloat = 14
         static let row: CGFloat = control
         static let primaryButton: CGFloat = control
         static let button: CGFloat = control
@@ -97,7 +100,7 @@ extension Color {
     }
 }
 
-/// Small uppercase label used above content ("UP NEXT", "STEP 2 OF 4").
+/// Small section label above content ("Up next", "Step 2 of 4"), iOS section-header style.
 struct EyebrowText: View {
     let text: Text
 
@@ -106,9 +109,7 @@ struct EyebrowText: View {
 
     var body: some View {
         text
-            .font(.caption.weight(.heavy))
-            .tracking(1)
-            .textCase(.uppercase)
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Theme.inkSoft)
     }
 }
@@ -122,7 +123,7 @@ struct SectionLabel: View {
 
     var body: some View {
         text
-            .font(.footnote.weight(.bold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(Theme.inkSoft)
             .textCase(nil)
     }
@@ -139,13 +140,32 @@ struct CheckCircle: View {
             if isDone {
                 Circle().fill(Theme.accent)
                 Image(systemName: "checkmark")
-                    .font(.system(size: size * 0.45, weight: .heavy))
+                    .font(.system(size: size * 0.45, weight: .bold))
                     .foregroundStyle(Theme.onAccent)
             } else {
-                Circle().strokeBorder(isCurrent ? Theme.accent : Theme.checkStroke, lineWidth: isCurrent ? 2.4 : 2)
+                Circle().strokeBorder(isCurrent ? Theme.accent : Theme.checkStroke, lineWidth: isCurrent ? 1.8 : 1.5)
             }
         }
         .frame(width: size, height: size)
         .symbolEffect(.bounce, value: isDone)
     }
+}
+
+/// Floating "Liquid Glass" capsule on iOS 26, a thin material before that.
+struct GlassCapsule: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.glassEffect(.regular.interactive(), in: Capsule())
+        } else {
+            content
+                .background(.regularMaterial, in: Capsule())
+                .overlay(Capsule().strokeBorder(Theme.separator.opacity(0.4), lineWidth: 0.5))
+                .shadow(color: .black.opacity(0.10), radius: 10, y: 4)
+        }
+    }
+}
+
+extension View {
+    /// Floating glass button or bar (Style D).
+    func glassCapsule() -> some View { modifier(GlassCapsule()) }
 }

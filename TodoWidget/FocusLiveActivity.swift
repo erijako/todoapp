@@ -8,7 +8,6 @@ struct FocusLiveActivity: Widget {
         ActivityConfiguration(for: FocusActivityAttributes.self) { context in
             FocusLockScreenView(state: context.state, isStale: context.isStale, modeSymbol: context.attributes.modeSymbol)
                 .padding(16)
-                .fontDesign(.rounded)
                 .activityBackgroundTint(Theme.Live.background.opacity(0.62))
                 .activitySystemActionForegroundColor(.white)
                 .widgetURL(AppLink.focus)
@@ -69,12 +68,12 @@ struct FocusLockScreenView: View {
                 Spacer()
 
                 CountdownText(state: state, isStale: isStale)
-                    .font(.title2.weight(.heavy))
+                    .font(.title2.weight(.bold))
                     .frame(maxWidth: 110, alignment: .trailing)
             }
 
             Text(state.title)
-                .font(.headline.weight(.heavy))
+                .font(.headline.weight(.bold))
                 .lineLimit(2)
 
             if !isStale {
@@ -114,7 +113,7 @@ struct FocusActions: View {
         HStack(spacing: 12) {
             Button(intent: CompleteFocusTaskIntent()) {
                 Label("Done", systemImage: "checkmark")
-                    .font(.subheadline.weight(.heavy))
+                    .font(.subheadline.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .foregroundStyle(Theme.Live.onAccent)
             }
