@@ -44,7 +44,8 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
   `Theme` (iOS grouped greys, indigo tint, SF Pro), focus mode with a Clock-style ring and round
   Not now / Done buttons, Up next card without shadow, floating glass quick-add bar (Liquid Glass on
   iOS 26), raw onboarding colors moved to tokens. Every other screen follows through the tokens and
-  still has its old layout (task detail, paywall, settings, sharing). Strings are still sentence
+  still has its old layout (task detail, paywall, settings, sharing). Onboarding has Style D mockups
+  on the canvas ("Style D · Onboarding" row) but its code layout has not been matched to them yet. Strings are still sentence
   case; mockups use Title Case.
 - **TestFlight**: account set up (App IDs, App Group, app record, API key, secrets, a device).
   **First build uploaded to TestFlight on 2026-11-24** (workflow run 7, built with Xcode 26).
