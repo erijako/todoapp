@@ -51,6 +51,10 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 ## Known bugs and risks (unverified, found by reading the code)
 
+- **Design audit 2026-11-25** (`docs/design-audit-2026-11-25.md`, 15/20): 26 pt check buttons,
+  details only via tap gestures (not VoiceOver-reachable), fixed button heights clip at large
+  Dynamic Type, Reduce Motion ignored, a few raw colors in onboarding.
+
 - Onboarding brain dump: the list's `ScrollView` takes a fixed 260 pt as soon as one item exists,
   leaving empty space.
 - `UpNextCard` has a tap gesture (open details) around a "Focus" button; check that tapping Focus

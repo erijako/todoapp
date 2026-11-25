@@ -34,7 +34,7 @@ decision is made, in the same commit as the work.
 | `design/make_icon.py` | Generates the app icon (light + dark) with Pillow + NumPy |
 | `docs/` | `privacy.html` (GitHub Pages), `testflight.md`, `STATUS.md`, `DECISIONS.md`, `SHARING_SPEC.md` (v1.1) |
 | `.github/workflows/` | `ios-build.yml` (every push), `testflight.yml` (off until account approval) |
-| `.claude/skills/` | Third-party startup skills (startup-design etc., MIT) |
+| `.claude/skills/` | Third-party skills: startup-design etc. (MIT), impeccable (design review, Apache 2.0) |
 
 The folder and target are still named `TodoApp` internally; only the display name, bundle IDs and
 URL scheme were renamed to Onestep. Don't rename folders without a reason.
