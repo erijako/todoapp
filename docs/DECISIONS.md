@@ -75,6 +75,13 @@ Rejected: A Lido (pool metaphor could feel themed), B Now playing (dark-first, t
 C Signpost (utilitarian, less cozy), E Activity (sporty, rings read as goals), F Sky (gradients and
 thin type risk contrast). Known risk: least memorable of the six, so icon, tint and copy must carry it.
 
+**Title Case for buttons and section headers (2026-11-25)**, as in Apple's apps and the Style D
+mockups ("Not Now", "Break It Down", "Up Next"). Body text and messages stay sentence case.
+Rejected: sentence case everywhere (softer, but reads less native next to system UI).
+
+**Release scope v1.0 (2026-11-25):** fixes + polish + Style D on every screen + unit tests, plus
+the reverse trial and gentle nudges (Pro). Privacy policy placeholders stay for the owner to fill.
+
 **Mockups use SF Pro Rounded** (Nunito only as a fallback for non-Apple viewers), matching the app.
 
 ## Features
