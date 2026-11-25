@@ -7,7 +7,7 @@
 ## Phases
 - [x] 0.5 Pre-Flight
 - [x] 1 Intake
-- [ ] 2 Brainstorm
+- [x] 2 Brainstorm
 - [ ] 2.5 Research depth
 - [ ] 3 Market research
 - [ ] 3.5 Research gate
