@@ -58,7 +58,9 @@ compiles. Everything below "works" in the sense that it is built and compiles cl
 
 - **TestFlight build 10 (2026-11-25):** sharing and simulated Pro visible. "Invite someone" failed
   with "Atomic failure" (likely CloudKit schema not deployed to Production); errors now show the
-  real cause. Fixed: cut-off recipient names, missing Later/Pass buttons, widget circle overlap. Keyboard on the list: empty "done", scrolling and a
+  real cause. Build 12 then failed with CK12 / BAD_REQUEST (2026-11-26, CloudKit log: RecordSave in the
+  new zone): the zone-wide share was saved in one batch with the space and member records. Fixed:
+  records first, then the share on its own; the invite sheet also creates a missing share. Fixed: cut-off recipient names, missing Later/Pass buttons, widget circle overlap. Keyboard on the list: empty "done", scrolling and a
   keyboard-toolbar button now dismiss it.
 
 - **Design audit 2026-11-25** (`docs/design-audit-2026-11-25.md`, 15/20): 26 pt check buttons,

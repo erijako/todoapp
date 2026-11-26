@@ -58,26 +58,39 @@ struct SharingCloud {
         let db = container.privateCloudDatabase
         let zoneResults = try await db.modifyRecordZones(saving: [zone], deleting: [])
         for (_, result) in zoneResults.saveResults { _ = try result.get() }
-        // Records and share in one batch so a half-made space never exists.
 
-        let share = CKShare(recordZoneID: zone.zoneID)
-        share[CKShare.SystemFieldKey.title] = space.name as CKRecordValue
-        share.publicPermission = .none
         try await save([
             Self.record(space, zone: zone.zoneID),
             Self.record(me, zone: zone.zoneID),
-            share,
         ], in: db)
+        // A zone-wide share must be saved on its own: mixed into a batch with other records,
+        // the server answers BAD_REQUEST (CK12).
+        _ = try await makeShare(in: zone.zoneID, title: space.name)
         return zone.zoneID
     }
 
-    /// The zone-wide share, for the invite sheet (owner only).
-    func share(in zoneID: CKRecordZone.ID) async throws -> CKShare {
+    /// The zone-wide share, for the invite sheet (owner only). Creates it if an earlier attempt
+    /// made the space but not the share.
+    func share(in zoneID: CKRecordZone.ID, title: String) async throws -> CKShare {
         let id = CKRecord.ID(recordName: CKRecordNameZoneWideShare, zoneID: zoneID)
-        guard let share = try await container.privateCloudDatabase.record(for: id) as? CKShare else {
+        do {
+            if let share = try await container.privateCloudDatabase.record(for: id) as? CKShare {
+                return share
+            }
             throw CloudError.noShare
+        } catch let error as CKError where error.code == .unknownItem {
+            return try await makeShare(in: zoneID, title: title)
         }
-        return share
+    }
+
+    private func makeShare(in zoneID: CKRecordZone.ID, title: String) async throws -> CKShare {
+        let share = CKShare(recordZoneID: zoneID)
+        share[CKShare.SystemFieldKey.title] = title as CKRecordValue
+        share.publicPermission = .none
+        let results = try await container.privateCloudDatabase.modifyRecords(saving: [share], deleting: [])
+        guard let result = results.saveResults[share.recordID] else { throw CloudError.noShare }
+        guard let saved = try result.get() as? CKShare else { throw CloudError.noShare }
+        return saved
     }
 
     /// Accepts an invite link so the zone shows up in your shared database.

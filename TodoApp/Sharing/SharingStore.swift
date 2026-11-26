@@ -198,7 +198,8 @@ final class SharingStore {
     /// The share to hand to the invite sheet (owner only).
     func shareForInvite() async throws -> (CKShare, CKContainer) {
         guard let zoneID, ownedByMe else { throw SharingCloud.CloudError.noShare }
-        return (try await cloud.share(in: zoneID), cloud.container)
+        let title = space?.name ?? String(localized: "Our space")
+        return (try await cloud.share(in: zoneID, title: title), cloud.container)
     }
 
     func renameSpace(_ name: String) {
